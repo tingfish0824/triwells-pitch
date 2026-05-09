@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>當植牙變平價，醫療價值在哪？｜三井牙科</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1b2a;
+    --navy-mid: #1a2d42;
+    --navy-light: #253d59;
+    --gold: #c8965a;
+    --gold-light: #e8b87a;
+    --cream: #f5f0e8;
+    --ice: #dce8f0;
+    --slate: #8fa5b8;
+    --white: #ffffff;
+    --accent-rust: #8b3a2a;
+    --accent-teal: #2a6b7c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  /* ── SLIDE ENGINE ── */
+  #deck {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+  }
+
+  .slide {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+    transition: opacity 0.7s cubic-bezier(0.25,0.46,0.45,0.94),
+                transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+  }
+
+  /* s9 needs explicit flex when active since .slide has no display set */
+  #s9.active {
+    display: flex !important;
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: translateY(-30px) scale(1.01);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  /* ── NAVIGATION ── */
+  #nav {
+    position: fixed;
+    bottom: 36px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-btn {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(200,150,90,0.4);
+    background: rgba(13,27,42,0.8);
+    color: var(--gold);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+  }
+  .nav-btn:hover {
+    border-color: var(--gold);
+    background: rgba(200,150,90,0.15);
+    transform: scale(1.08);
+  }
+  .nav-btn:disabled {
+    opacity: 0.25;
+    cursor: default;
+    transform: none;
+  }
+
+  #slide-counter {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--slate);
+    min-width: 60px;
+    text-align: center;
+    font-family: 'DM Serif Display', serif;
+  }
+
+  /* ── DOTS ── */
+  #dots {
+    position: fixed;
+    right: 28px; top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .dot.active {
+    background: var(--gold);
+    transform: scale(1.5);
+  }
+
+  /* ── LOGO ── */
+  #logo-badge {
+    position: fixed;
+    top: 28px; left: 36px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #logo-badge .logo-mark {
+    width: 32px; height: 32px;
+    border: 1.5px solid var(--gold);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 14px;
+    color: var(--gold);
+  }
+  #logo-badge .logo-text {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--slate);
+    text-transform: uppercase;
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    transition: width 0.6s ease;
+    z-index: 200;
+  }
+
+  /* ── SHARED ELEMENTS ── */
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(200,150,90,0.4);
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+
+  .gold-line {
+    width: 40px; height: 2px;
+    background: var(--gold);
+    margin: 20px 0;
+  }
+
+  .blockquote {
+    border-left: 3px solid var(--gold);
+    padding: 16px 20px;
+    background: rgba(200,150,90,0.06);
+    border-radius: 0 4px 4px 0;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--cream);
+  }
+
+  /* ────────────────────────────────
+     SLIDE 1 — COVER
+  ──────────────────────────────── */
+  #s1 {
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 10%;
+  }
+
+  #s1::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,150,90,0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  #s1::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; left: -150px;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(42,107,124,0.12) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  #s1 .s1-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.3s forwards;
+  }
+
+  #s1 h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: clamp(42px, 6vw, 82px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.5s forwards;
+  }
+
+  #s1 h1 em {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  #s1 .s1-sub {
+    margin-top: 28px;
+    font-size: 15px;
+    color: var(--slate);
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.7s forwards;
+  }
+
+  #s1 .s1-meta {
+    margin-top: 48px;
+    display: flex;
+    gap: 36px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.9s forwards;
+  }
+
+  #s1 .s1-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  #s1 .s1-meta-item .num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  #s1 .s1-meta-item .label {
+    font-size: 11px;
+    color: var(--slate);
+    letter-spacing: 0.12em;
+  }
+
+  .divider-v {
+    width: 1px;
+    background: rgba(255,255,255,0.12);
+    align-self: stretch;
+  }
+
+  /* ────────────────────────────────
+     SLIDE 2 — 市場現實
+  ──────────────────────────────── */
+  #s2 {
+    background: var(--navy);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  #s2 .s2-left {
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+
+  #s2 h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(26px, 3.5vw, 44px);
+    font-weight: 900;
+    line-height: 1.35;
+    margin-bottom: 24px;
+  }
+
+  #s2 .s2-right {
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 28px;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 24px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--gold);
+  }
+
+  .stat-card .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-card .stat-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 8px 0 4px;
+    color: var(--cream);
+  }
+
+  .stat-card .stat-desc {
+    font-size: 12px;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+
+  /* ────────────────────────────────
+     SLIDE 3 — 三個時代
+  ──────────────────────────────── */
+  #s3 {
+    background: var(--navy-mid);
+    padding: 60px 8%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #s3 h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(22px, 3vw, 36px);
+    font-weight: 900;
+    margin-bottom: 48px;
+    text-align: center;
+  }
+
+  .era-grid {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr 40px 1fr;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .era-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 20px;
+    opacity: 0.5;
+  }
+
+  .era-card {
+    border-radius: 8px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .era-card.v1 { background: rgba(143,165,184,0.08); border: 1px solid rgba(143,165,184,0.2); }
+  .era-card.v2 { background: rgba(200,150,90,0.08); border: 1px solid rgba(200,150,90,0.25); }
+  .era-card.v3 { background: rgba(42,107,124,0.15); border: 1px solid rgba(42,107,124,0.4); }
+
+  .era-badge {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .v1 .era-badge { color: var(--slate); background: rgba(143,165,184,0.15); }
+  .v2 .era-badge { color: var(--gold); background: rgba(200,150,90,0.15); }
+  .v3 .era-badge { color: #7ec8d8; background: rgba(42,107,124,0.25); }
+
+  .era-card h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .era-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .era-row .era-key {
+    color: var(--gold);
+    font-weight: 700;
+    white-space: nowrap;
+    min-width: 54px;
+  }
+
+  .era-row .era-val {
+    color: var(--cream);
+  }
+
+  .era-card.v3 .era-row .era-val { color: #c8e8f0; }
+
+  .era-highlight {
+    margin-top: 20px;
+    padding: 10px 14px;
+    background: rgba(42,107,124,0.2);
+    border-radius: 4px;
+    font-size: 11px;
+    color: #7ec8d8;
+    font-style: italic;
+  }
+
+  .era-footer {
+    margin-top: 32px;
+    text-align: center;
+  }
+
+  /* ────────────────────────────────
+     SLIDE 4 — 三井醫療哲學
+  ──────────────────────────────── */
+  #s4 {
+    background: var(--navy);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #s4 .s4-left {
+    background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy-light) 100%);
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #s4 .s4-left::after {
+    content: '留牙';
+    position: absolute;
+    bottom: -20px; right: -10px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 100px;
+    font-weight: 900;
+    color: rgba(200,150,90,0.06);
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  #s4 .philosophy-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(28px, 4vw, 50px);
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 20px;
+  }
+
+  #s4 .philosophy-title .accent { color: var(--gold); }
+
+  #s4 .s4-right {
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .philosophy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .philosophy-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 18px;
+  }
+
+  .philosophy-item .pi-icon {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .philosophy-item h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+
+  .philosophy-item p {
+    font-size: 11px;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+
+  .philosophy-item.full {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  /* ────────────────────────────────
+     SLIDE 5 — 醫師職涯金字塔
+  ──────────────────────────────── */
+  #s5 {
+    background: var(--navy-mid);
+    padding: 60px 8%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #s5 h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(20px, 2.8vw, 34px);
+    font-weight: 900;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .pyramid-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .pyramid-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .pyramid-tier {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .pyramid-tier:nth-child(1) {
+    width: 60%; height: 64px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--navy);
+    font-size: 13px;
+  }
+
+  .pyramid-tier:nth-child(2) {
+    width: 80%; height: 56px;
+    background: rgba(200,150,90,0.25);
+    border: 1px solid rgba(200,150,90,0.4);
+    color: var(--gold-light);
+  }
+
+  .pyramid-tier:nth-child(3) {
+    width: 100%; height: 52px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--cream);
+  }
+
+  .pyramid-tier:hover { transform: scaleX(1.03); }
+
+  .pyramid-details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .pyramid-detail-card {
+    padding: 20px 24px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .pyramid-detail-card.tier-top {
+    border-color: rgba(200,150,90,0.4);
+    background: rgba(200,150,90,0.06);
+  }
+
+  .pyramid-detail-card .pd-tier {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .tier-top .pd-tier { color: var(--gold); }
+
+  .pyramid-detail-card h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .pyramid-detail-card p {
+    font-size: 12px;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+
+  .pyramid-detail-card .pd-income {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .income-tag {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    background: rgba(200,150,90,0.12);
+    color: var(--gold-light);
+    border: 1px solid rgba(200,150,90,0.2);
+  }
+
+  /* ────────────────────────────────
+     SLIDE 6 — 給醫師的承諾
+  ──────────────────────────────── */
+  #s6 {
+    background: var(--navy);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #s6 .s6-left {
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(160deg, rgba(42,107,124,0.15) 0%, transparent 60%);
+  }
+
+  #s6 h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(24px, 3.5vw, 44px);
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+
+  #s6 .s6-right {
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .promise-card {
+    padding: 22px 24px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.3s ease;
+  }
+
+  .promise-card:hover {
+    border-color: rgba(200,150,90,0.3);
+    background: rgba(200,150,90,0.05);
+    transform: translateX(4px);
+  }
+
+  .promise-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .promise-card p {
+    font-size: 12px;
+    color: var(--slate);
+    line-height: 1.8;
+  }
+
+  .young-senior-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .ys-card {
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 18px;
+  }
+
+  .ys-card .ys-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .ys-card.young .ys-label { color: #7ec8d8; }
+  .ys-card.senior .ys-label { color: var(--gold); }
+
+  .ys-card .ys-concern {
+    font-size: 11px;
+    color: var(--slate);
+    margin-bottom: 8px;
+  }
+
+  .ys-card .ys-answer {
+    font-size: 11px;
+    color: var(--cream);
+    line-height: 1.7;
+  }
+
+  /* ────────────────────────────────
+     SLIDE 7 — CEO語氣 / 資源佈局
+  ──────────────────────────────── */
+  #s7 {
+    background: var(--navy-mid);
+    padding: 60px 8%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #s7 h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(20px, 2.8vw, 34px);
+    font-weight: 900;
+    margin-bottom: 12px;
+  }
+
+  #s7 .s7-sub {
+    font-size: 13px;
+    color: var(--slate);
+    margin-bottom: 36px;
+  }
+
+  .resource-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .resource-step {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .resource-step .rs-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: rgba(200,150,90,0.15);
+    position: absolute;
+    top: 8px; right: 12px;
+    line-height: 1;
+  }
+
+  .resource-step h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .resource-step p {
+    font-size: 11px;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+
+  .ceo-quotes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .ceo-quote-card {
+    background: rgba(13,27,42,0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 20px;
+    position: relative;
+  }
+
+  .ceo-quote-card::before {
+    content: '"';
+    font-family: 'DM Serif Display', serif;
+    font-size: 60px;
+    color: rgba(200,150,90,0.15);
+    position: absolute;
+    top: -8px; left: 12px;
+    line-height: 1;
+  }
+
+  .ceo-quote-card .cq-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    margin-top: 4px;
+  }
+
+  .ceo-quote-card p {
+    font-size: 12px;
+    color: var(--cream);
+    line-height: 1.8;
+  }
+
+  .ceo-quote-card .cq-tone {
+    margin-top: 12px;
+    font-size: 10px;
+    color: var(--slate);
+    font-style: italic;
+  }
+
+  /* ────────────────────────────────
+     SLIDE 9 — LINE + 表單
+  ──────────────────────────────── */
+  #s9 {
+    background: var(--navy);
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 8%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #s9::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,185,0,0.04) 0%, rgba(200,150,90,0.04) 40%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 0;
+    width: 100%;
+    max-width: 900px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .cta-divider {
+    background: rgba(255,255,255,0.08);
+    align-self: stretch;
+  }
+
+  .cta-panel {
+    padding: 44px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .cta-panel .cta-icon-wrap {
+    width: 72px; height: 72px;
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    margin-bottom: 4px;
+  }
+
+  .line-panel .cta-icon-wrap {
+    background: rgba(0,185,0,0.12);
+    border: 1.5px solid rgba(0,185,0,0.3);
+  }
+
+  .form-panel .cta-icon-wrap {
+    background: rgba(200,150,90,0.12);
+    border: 1.5px solid rgba(200,150,90,0.3);
+  }
+
+  .cta-panel h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cream);
+  }
+
+  .cta-panel p {
+    font-size: 12px;
+    color: var(--slate);
+    line-height: 1.8;
+    max-width: 260px;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    margin-top: 8px;
+  }
+
+  .line-btn {
+    background: #06C755;
+    color: #fff;
+  }
+  .line-btn:hover {
+    background: #05b34d;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(6,199,85,0.3);
+  }
+
+  .form-btn {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--navy);
+  }
+  .form-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(200,150,90,0.35);
+  }
+
+  .qr-placeholder {
+    width: 100px; height: 100px;
+    border: 1.5px dashed rgba(6,199,85,0.35);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: rgba(6,199,85,0.5);
+    letter-spacing: 0.1em;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .line-id {
+    font-size: 11px;
+    color: rgba(6,199,85,0.7);
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+
+  /* ────────────────────────────────
+     SLIDE 8 — 你的選擇（CTA）
+  ──────────────────────────────── */
+  #s8 {
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 10%;
+    text-align: center;
+    position: relative;
+  }
+
+  #s8::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,150,90,0.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  #s8 .s8-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  #s8 h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(30px, 5vw, 60px);
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 14px;
+  }
+
+  #s8 .s8-sub {
+    font-size: 14px;
+    color: var(--slate);
+    margin-bottom: 48px;
+  }
+
+  .choice-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 860px;
+    margin-bottom: 40px;
+  }
+
+  .choice-card {
+    padding: 28px 24px;
+    border-radius: 8px;
+    transition: all 0.35s ease;
+    cursor: default;
+  }
+
+  .choice-card.c1 {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .choice-card.c2 {
+    background: rgba(200,150,90,0.06);
+    border: 1px solid rgba(200,150,90,0.25);
+  }
+
+  .choice-card.c3 {
+    background: rgba(42,107,124,0.12);
+    border: 1px solid rgba(42,107,124,0.4);
+  }
+
+  .choice-card:hover { transform: translateY(-4px); }
+
+  .choice-card .cc-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .c1 .cc-num { color: var(--slate); }
+  .c2 .cc-num { color: var(--gold); }
+  .c3 .cc-num { color: #7ec8d8; }
+
+  .choice-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--cream);
+  }
+
+  .choice-card p {
+    font-size: 11px;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+
+  .c3 p { color: #7ec8d8; }
+
+  #s8 .final-quote {
+    max-width: 700px;
+    text-align: left;
+  }
+
+  /* ────────────────────────────────
+     ANIMATIONS
+  ──────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide.active .anim-1 { animation: fadeUp 0.6s ease 0.1s both; }
+  .slide.active .anim-2 { animation: fadeUp 0.6s ease 0.25s both; }
+  .slide.active .anim-3 { animation: fadeUp 0.6s ease 0.4s both; }
+  .slide.active .anim-4 { animation: fadeUp 0.6s ease 0.55s both; }
+  .slide.active .anim-5 { animation: fadeUp 0.6s ease 0.7s both; }
+
+  /* ─── keyboard hint ─── */
+  #key-hint {
+    position: fixed;
+    bottom: 90px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: rgba(143,165,184,0.5);
+    letter-spacing: 0.15em;
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<!-- Logo -->
+<div id="logo-badge">
+  <div class="logo-mark">三</div>
+  <div class="logo-text">三井牙科體系</div>
+</div>
+
+<!-- Progress -->
+<div id="progress"></div>
+
+<!-- Dots -->
+<div id="dots"></div>
+
+<!-- Key hint -->
+<div id="key-hint">← → 鍵盤切換 &nbsp;｜&nbsp; 點擊左右按鈕翻頁</div>
+
+<!-- DECK -->
+<div id="deck">
+
+  <!-- ── SLIDE 1 ── COVER -->
+  <div class="slide active" id="s1">
+    <div class="s1-eyebrow">產業洞察 · 牙科產業正在進入體系競爭時代</div>
+    <h1>當植牙<em>變平價</em>，<br>醫療<em>價值</em>在哪？</h1>
+    <p class="s1-sub">平價植牙時代的醫療秩序重構與醫師職涯藍圖</p>
+    <div class="s1-meta">
+      <div class="s1-meta-item">
+        <span class="num">40%</span>
+        <span class="label">植牙降幅</span>
+      </div>
+      <div class="divider-v"></div>
+      <div class="s1-meta-item">
+        <span class="num">7,000+</span>
+        <span class="label">全台診所家數</span>
+      </div>
+      <div class="divider-v"></div>
+      <div class="s1-meta-item">
+        <span class="num">77%</span>
+        <span class="label">數位決策患者</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2 ── 市場現實 -->
+  <div class="slide" id="s2">
+    <div class="s2-left">
+      <div class="tag anim-1">市場現實</div>
+      <h2 class="anim-2">當醫療專業<br>淪為比價商品</h2>
+      <div class="gold-line anim-2"></div>
+      <p class="anim-3" style="font-size:14px;color:var(--slate);line-height:1.9;">
+        走在路上，植牙廣告的價格一個比一個低。<br>
+        商品化、飽和、數位決策——三重夾擊下，<br>
+        單靠技術已不夠。<strong style="color:var(--cream)">只有體系整合，才能存活。</strong>
+      </p>
+      <div class="anim-4" style="margin-top:28px;">
+        <div class="blockquote">
+          這不是危機，而是選擇的時刻。
+        </div>
+      </div>
+    </div>
+    <div class="s2-right">
+      <div class="stat-card anim-2">
+        <div class="stat-num">40%</div>
+        <div class="stat-title">植牙商品化時代來臨</div>
+        <div class="stat-desc">單顆植牙從 8–10 萬降至 3.8–5 萬，降幅達 40%</div>
+      </div>
+      <div class="stat-card anim-3">
+        <div class="stat-num">7,000+</div>
+        <div class="stat-title">診所密度超越便利商店</div>
+        <div class="stat-desc">全台牙科診所 7,000+ 家，已超過 7-11</div>
+      </div>
+      <div class="stat-card anim-4">
+        <div class="stat-num">77%</div>
+        <div class="stat-title">數位決策路徑</div>
+        <div class="stat-desc">患者在預約醫療服務前，會先搜尋網路資訊 — Google Health Study</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 3 ── 三個時代 -->
+  <div class="slide" id="s3">
+    <div class="tag anim-1" style="display:block;text-align:center;">關鍵轉折</div>
+    <h2 class="anim-2">當技術普及化，單打獨鬥的時代正式結束</h2>
+    <div class="era-grid anim-3">
+      <div class="era-card v1">
+        <span class="era-badge">1.0 技術紅利期</span>
+        <h3>孤勇者</h3>
+        <div class="era-row"><span class="era-key">競爭核心</span><span class="era-val">醫師的「手」（技術）</span></div>
+        <div class="era-row"><span class="era-key">醫師角色</span><span class="era-val">孤勇者 Hero</span></div>
+        <div class="era-row"><span class="era-key">價值轉向</span><span class="era-val">賣「專業」</span></div>
+        <div class="era-row"><span class="era-key">患者感知</span><span class="era-val">「這個醫師很神」</span></div>
+      </div>
+      <div class="era-arrow">→</div>
+      <div class="era-card v2">
+        <span class="era-badge">2.0 行銷戰國期</span>
+        <h3>臨床勞工</h3>
+        <div class="era-row"><span class="era-key">競爭核心</span><span class="era-val">診所的「錢」（廣告費）</span></div>
+        <div class="era-row"><span class="era-key">醫師角色</span><span class="era-val">臨床勞工 Worker</span></div>
+        <div class="era-row"><span class="era-key">價值轉向</span><span class="era-val">賣「產品」（如：植牙）</span></div>
+        <div class="era-row"><span class="era-key">患者感知</span><span class="era-val">「這家比較便宜」</span></div>
+      </div>
+      <div class="era-arrow">→</div>
+      <div class="era-card v3">
+        <span class="era-badge">3.0 體系秩序期</span>
+        <h3>醫療建築師</h3>
+        <div class="era-row"><span class="era-key">競爭核心</span><span class="era-val">體系的「腦」（整合力）</span></div>
+        <div class="era-row"><span class="era-key">醫師角色</span><span class="era-val">醫療建築師 Architect</span></div>
+        <div class="era-row"><span class="era-key">價值轉向</span><span class="era-val">賣「解決方案」（全人醫療）</span></div>
+        <div class="era-row"><span class="era-key">患者感知</span><span class="era-val">「這套系統讓我安心」</span></div>
+        <div class="era-highlight">在 3.0 時代，我們比的是——誰能建立更穩定的醫療秩序。</div>
+      </div>
+    </div>
+    <div class="era-footer anim-4">
+      <p style="font-size:12px;color:var(--slate);">單純靠技術已經不夠。這是診所生存的必要條件，而非選項。</p>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4 ── 三井醫療哲學 -->
+  <div class="slide" id="s4">
+    <div class="s4-left">
+      <div class="tag anim-1">三井醫療哲學</div>
+      <div class="philosophy-title anim-2">留牙，<br>才是最<span class="accent">高級</span>的<br>奢侈品</div>
+      <div class="gold-line anim-2"></div>
+      <p class="anim-3" style="font-size:13px;color:var(--slate);line-height:1.9;margin-bottom:16px;">
+        我們是口腔重建中心，而非植牙工廠
+      </p>
+      <div class="blockquote anim-4">
+        拒絕為了業績盲目拔牙，讓全人醫療成為平價時代中，患者願意支付溢價的絕對理由。
+      </div>
+    </div>
+    <div class="s4-right">
+      <div class="tag anim-1">核心信念</div>
+      <h2 class="anim-2" style="font-family:'Noto Serif TC',serif;font-size:clamp(18px,2.5vw,28px);font-weight:900;margin-bottom:20px;">全人醫療：三井的核心信念</h2>
+      <p class="anim-2" style="font-size:12px;color:var(--slate);margin-bottom:20px;line-height:1.7;">我們治療的，不只是牙齒——而是重建一個可以長期安住的口腔系統</p>
+      <div class="philosophy-grid anim-3">
+        <div class="philosophy-item">
+          <div class="pi-icon">🛡</div>
+          <h4>牙周治療</h4>
+          <p>穩定牙周組織，建立長期支持基礎</p>
+        </div>
+        <div class="philosophy-item">
+          <div class="pi-icon">🔬</div>
+          <h4>根管治療</h4>
+          <p>處理深層感染，保留可用牙體結構</p>
+        </div>
+        <div class="philosophy-item">
+          <div class="pi-icon">⚖️</div>
+          <h4>咬合重建</h4>
+          <p>重整整體咬合關係，恢復功能與穩定</p>
+        </div>
+        <div class="philosophy-item">
+          <div class="pi-icon">✨</div>
+          <h4>美學修復</h4>
+          <p>調整比例與外觀，打造自然自信笑容</p>
+        </div>
+        <div class="philosophy-item full">
+          <div class="pi-icon" style="font-size:22px;margin-top:2px;">💙</div>
+          <div>
+            <h4>心理關懷</h4>
+            <p>降低看診焦慮，建立安心與信任</p>
+          </div>
+        </div>
+      </div>
+      <div class="blockquote anim-4" style="font-size:12px;">
+        三井牙醫不是單一科別的診所，而是一座全方位口腔重建中心。透過跨專科整合，讓複雜病例得到完整照護，讓醫師的專業判斷被真正實現。
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5 ── 醫師職涯金字塔 -->
+  <div class="slide" id="s5">
+    <div class="tag anim-1" style="display:block;text-align:center;">醫師合作金字塔</div>
+    <h2 class="anim-2">從「勞力」轉向「價值」，最終成為體系的共同擁有者</h2>
+    <div class="pyramid-container anim-3">
+      <div class="pyramid-visual">
+        <div class="pyramid-tier" style="background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);">
+          合夥 / 品牌領袖
+        </div>
+        <div class="pyramid-tier">
+          專家 / 技術顧問
+        </div>
+        <div class="pyramid-tier">
+          臨床診療
+        </div>
+      </div>
+      <div class="pyramid-details">
+        <div class="pyramid-detail-card tier-top">
+          <div class="pd-tier">頂層 — 影響力與被動收入</div>
+          <h4>合夥 / 品牌領袖</h4>
+          <p>參與體系決策，建立個人品牌影響力，實現財富自由</p>
+          <div class="pd-income">
+            <span class="income-tag">體系分潤</span>
+            <span class="income-tag">技術專利</span>
+            <span class="income-tag">教學收益</span>
+            <span class="income-tag">股權增值</span>
+          </div>
+        </div>
+        <div class="pyramid-detail-card">
+          <div class="pd-tier" style="color:var(--gold-light);">中層 — 專業不可替代性</div>
+          <h4>專家 / 技術顧問</h4>
+          <p>掌握高難度療程，跨院區協同治療，成為三井核心技術支柱</p>
+          <div class="pd-income">
+            <span class="income-tag">高難度療程分潤</span>
+            <span class="income-tag">跨院協同診費</span>
+          </div>
+        </div>
+        <div class="pyramid-detail-card">
+          <div class="pd-tier" style="color:var(--slate);">基層 — 信任與技術建立</div>
+          <h4>臨床診療</h4>
+          <p>建立完整全人診斷格局，累積病患信任與技術深度</p>
+          <div class="pd-income">
+            <span class="income-tag" style="border-color:rgba(143,165,184,0.2);color:var(--slate);background:rgba(143,165,184,0.08);">診費</span>
+            <span class="income-tag" style="border-color:rgba(143,165,184,0.2);color:var(--slate);background:rgba(143,165,184,0.08);">勞務費</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="anim-4" style="margin-top:24px;text-align:center;">
+      <div class="blockquote" style="display:inline-block;text-align:left;max-width:600px;font-size:13px;">
+        三井的設計，是讓各位從「勞力密集」轉向「價值密集」，最終成為體系的共同擁有者。
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 6 ── 給醫師的承諾 -->
+  <div class="slide" id="s6">
+    <div class="s6-left">
+      <div class="tag anim-1">給醫師的承諾</div>
+      <h2 class="anim-2">三井體系，<br>回應每一位醫師的擔憂</h2>
+      <div class="gold-line anim-2"></div>
+      <p class="anim-3" style="font-size:13px;color:var(--slate);line-height:1.9;margin-bottom:24px;">
+        這套邏輯精準解決台下醫師最深層的兩個疑慮
+      </p>
+      <div class="young-senior-grid anim-3">
+        <div class="ys-card young">
+          <div class="ys-label">年輕醫師</div>
+          <div class="ys-concern">擔憂：沒人教、沒機會、不知道路在哪裡</div>
+          <div class="ys-answer"><strong>三井的答案：</strong>全人主治手把手帶領，有人陪你走從新人到專科的每一步</div>
+        </div>
+        <div class="ys-card senior">
+          <div class="ys-label">資深醫師</div>
+          <div class="ys-concern">擔憂：職涯到頂、體力下滑、價值無處彰顯</div>
+          <div class="ys-answer"><strong>三井的答案：</strong>轉型為「據點領袖」，靠培養人才與合作拓點實現職涯的第二座高峰</div>
+        </div>
+      </div>
+      <div class="blockquote anim-4" style="margin-top:20px;font-size:12px;">
+        你不需要承擔創業初期的所有風險，因為三井已經幫你鋪好了從「專業醫師」到「經營者」的完整路徑。
+      </div>
+    </div>
+    <div class="s6-right">
+      <div class="tag anim-1">體系承諾</div>
+      <div class="promise-card anim-2">
+        <h4>🎯 回歸醫療本質</h4>
+        <p>不為業績犧牲留牙原則，不為行政雜事分心。三井讓醫師專注在最重要的事——治療。</p>
+      </div>
+      <div class="promise-card anim-3">
+        <h4>🏗 體系承擔後勤</h4>
+        <p>行政、品牌、數據、資金——三井全力支援。你只需要成為最好的醫師。</p>
+      </div>
+      <div class="promise-card anim-4">
+        <h4>🤝 共建牙科新秩序</h4>
+        <p>成為被患者信任、被同業尊敬的醫師。與三井一起定義下一個十年的牙科新秩序。</p>
+      </div>
+      <div class="blockquote anim-5" style="font-size:12px;margin-top:4px;">
+        平價時代的到來，不代表醫療價值的貶值，而是代表「平庸醫療」的淘汰。剩下的，交給三井體系。
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 7 ── 資源佈局 + CEO語氣 -->
+  <div class="slide" id="s7">
+    <div class="tag anim-1">資源佈局 · CEO 的領袖語氣</div>
+    <h2 class="anim-2">找到對的人，走向對的路</h2>
+    <p class="s7-sub anim-2">三井的擴張邏輯：不是「買地蓋房」，而是「投資人才」</p>
+    <div class="resource-steps anim-3">
+      <div class="resource-step">
+        <div class="rs-num">1</div>
+        <h4>全人主治醫師</h4>
+        <p>不只技術精湛，更具備統籌牙周、植牙、矯正的全人診斷格局</p>
+      </div>
+      <div class="resource-step">
+        <div class="rs-num">2</div>
+        <h4>三井資源全力傾斜</h4>
+        <p>最好的設備、助理團隊、行銷預算——優先交給卓越且願意帶領後輩的醫師</p>
+      </div>
+      <div class="resource-step">
+        <div class="rs-num">3</div>
+        <h4>全人據點醫師</h4>
+        <p>從看診者成為培育者，帶領下一代，傳承三井的醫療理念與標準</p>
+      </div>
+      <div class="resource-step">
+        <div class="rs-num">4</div>
+        <h4>體系分支領袖</h4>
+        <p>與三井合作拓點，從院長晉升為體系共同擁有者，實現影響力與價值的雙重躍升</p>
+      </div>
+    </div>
+    <div class="ceo-quotes anim-4">
+      <div class="ceo-quote-card">
+        <div class="cq-label">識別對的人</div>
+        <p>「我看的不是你今天做了幾顆植牙，而是你如何對待病人、如何與專科協作。因為我要找的，是未來的據點領袖。」</p>
+        <div class="cq-tone">語氣：專注、帶著期待</div>
+      </div>
+      <div class="ceo-quote-card">
+        <div class="cq-label">合作拓點</div>
+        <p>「三井提供『讓你想變強的人，一定有舞台』的制度。我們一起開拓新據點，是為了讓更多地方，能有三井等級的醫療秩序。」</p>
+        <div class="cq-tone">語氣：宏觀、充滿使命感</div>
+      </div>
+      <div class="ceo-quote-card">
+        <div class="cq-label">資源傾斜</div>
+        <p>「最好的設備、最好的助理團隊、最多的行銷預算，會優先交給願意投入全人醫療、願意帶領後輩的醫師。卓越的表現永遠得到最實質的資源回應。」</p>
+        <div class="cq-tone">語氣：果斷、充滿力量</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 8 ── CTA -->
+  <div class="slide" id="s8">
+    <div class="s8-eyebrow anim-1">你的選擇，決定下一個十年</div>
+    <h2 class="anim-2">這不是一場招聘說明會，<br>而是一份邀請。</h2>
+    <p class="s8-sub anim-2">三井不是在找員工，我們在尋找合夥人。</p>
+    <div class="choice-grid anim-3">
+      <div class="choice-card c1">
+        <div class="cc-num">一</div>
+        <h4>繼續單打獨鬥</h4>
+        <p>面對無止盡的價格戰</p>
+      </div>
+      <a class="choice-card c2" href="https://docs.google.com/forms/d/e/1FAIpQLSdacm9LtxD183v-wOCWCCCkXSl3quvWJYubpeZ2t48rcMq58g/viewform?usp=dialog" target="_blank" style="text-decoration:none;cursor:pointer;">
+        <div class="cc-num">二</div>
+        <h4>加入體系</h4>
+        <p>成為醫療秩序的建築師</p>
+        <div style="margin-top:16px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.08em;">
+          📝 填寫意向表單 →
+        </div>
+      </a>
+      <a class="choice-card c3" href="https://lin.ee/s0kyq1J" target="_blank" style="text-decoration:none;cursor:pointer;">
+        <div class="cc-num">三</div>
+        <h4>與三井合作</h4>
+        <p>從醫師晉升為體系共同擁有者</p>
+        <div style="margin-top:16px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#06C755;letter-spacing:0.08em;">
+          💬 加入 LINE@ →
+        </div>
+      </a>
+    </div>
+    <div class="final-quote anim-4">
+      <div class="blockquote">
+        如果你準備好從「勞力密集」轉向「價值密集」，從「看診者」成為「領袖」，那麼——歡迎加入我們，一起定義下一個十年的牙科新秩序。
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 9 removed ── -->
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<div id="nav">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">←</button>
+  <span id="slide-counter">1 / 8</span>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">→</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.getElementById('dots');
+  const counter = document.getElementById('slide-counter');
+  const progress = document.getElementById('progress');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let current = 0;
+  const total = slides.length;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dots.appendChild(d);
+  });
+
+  function updateUI() {
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    counter.textContent = `${current + 1} / ${total}`;
+    progress.style.width = `${((current + 1) / total) * 100}%`;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  function goTo(idx) {
+    if (idx === current) return;
+    slides[current].classList.add('exit');
+    slides[current].classList.remove('active');
+    setTimeout(() => slides[current].classList.remove('exit'), 500);
+    current = idx;
+    slides[current].classList.add('active');
+    updateUI();
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next >= 0 && next < total) goTo(next);
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+  });
+
+  updateUI();
+</script>
+</body>
+</html>
