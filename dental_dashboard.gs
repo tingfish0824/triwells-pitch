@@ -28,7 +28,10 @@ var TREATMENT_MAP = [
 ];
 
 var INVALID_TITLE_KEYS = ['勿約診', '擋約'];
-var INVALID_DESC_KEYS  = ['勿約診', '勿約', '接現場', '只看現掛', '治療診', '假日', '假日勿約'];
+var INVALID_DESC_KEYS  = ['勿約診', '勿約', '接現場', '只看現掛', '治療診', '假日勿約'];
+
+// Per-execution calendar ID cache (avoids repeated getAllCalendars() calls)
+var _calCache = {};
 
 // ── Entry Point ──────────────────────────────────────────────
 function doGet(e) {
@@ -38,11 +41,32 @@ function doGet(e) {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-// ── Calendar ID 取得 ─────────────────────────────────────────
+// ── Calendar ID 取得（含自動偵測）──────────────────────────────
 function getCalendarId(clinicName) {
+  if (_calCache[clinicName] !== undefined) return _calCache[clinicName];
   var props = PropertiesService.getScriptProperties();
   var keyMap = { '林口':'CAL_LINKOU','忠孝':'CAL_ZHONGXIAO','巨蛋':'CAL_JUEDAN','頭等艙':'CAL_FIRST','波音':'CAL_BOEING' };
-  return props.getProperty(keyMap[clinicName]) || '';
+
+  // 1. Script Properties 優先
+  var stored = props.getProperty(keyMap[clinicName]) || '';
+  if (stored) { _calCache[clinicName] = stored; return stored; }
+
+  // 2. 自動掃描所有可存取日曆（名稱含診所名）
+  try {
+    var all = CalendarApp.getAllCalendars();
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].getName().indexOf(clinicName) >= 0) {
+        var id = all[i].getId();
+        _calCache[clinicName] = id;
+        props.setProperty(keyMap[clinicName], id);
+        console.log('[AutoDetect] ' + clinicName + ' → ' + all[i].getName());
+        return id;
+      }
+    }
+  } catch(e) { console.log('[AutoDetect error] ' + clinicName + ': ' + e.message); }
+
+  _calCache[clinicName] = '';
+  return '';
 }
 
 // ── 工具函式 ──────────────────────────────────────────────────
@@ -78,7 +102,15 @@ function isValidAppointment(title, desc, startTime) {
   title=title||''; desc=desc||'';
   for (var i=0;i<INVALID_TITLE_KEYS.length;i++) if(title.indexOf(INVALID_TITLE_KEYS[i])>=0) return false;
   for (var j=0;j<INVALID_DESC_KEYS.length;j++) if(desc.indexOf(INVALID_DESC_KEYS[j])>=0) return false;
-  if (startTime && startTime.getHours()<9) return false;
+  // 使用 Asia/Taipei 時區判斷，避免 GAS 專案時區設定錯誤導致正常約診被過濾
+  if (startTime) {
+    try {
+      var h = parseInt(Utilities.formatDate(startTime, 'Asia/Taipei', 'H'), 10);
+      if (h < 8) return false;
+    } catch(e) {
+      if (startTime.getHours() < 8) return false;
+    }
+  }
   return true;
 }
 
@@ -477,4 +509,46 @@ function getMonthDataForClient(yearMonth) {
 function getCalendarGridDataForClient(yearMonth) {
   try { return JSON.stringify(getCalendarGridData(yearMonth)); }
   catch(e) { return JSON.stringify({error:e.message}); }
+}
+
+// ── 診斷工具（GAS 編輯器執行用）────────────────────────────────
+function testConfig() {
+  var props = PropertiesService.getScriptProperties();
+  var keyMap = { '林口':'CAL_LINKOU','忠孝':'CAL_ZHONGXIAO','巨蛋':'CAL_JUEDAN','頭等艙':'CAL_FIRST','波音':'CAL_BOEING' };
+  console.log('=== Script Properties ===');
+  CLINIC_NAMES.forEach(function(name) {
+    var id = props.getProperty(keyMap[name]);
+    console.log(name + ': ' + (id || '⚠️ 未設定'));
+  });
+  console.log('\n=== 可存取日曆列表 ===');
+  try {
+    var calendars = CalendarApp.getAllCalendars();
+    console.log('共 ' + calendars.length + ' 個日曆');
+    calendars.forEach(function(c) { console.log('  - ' + c.getName() + '\n    ID: ' + c.getId()); });
+  } catch(e) { console.log('Error: ' + e.message); }
+}
+
+function testFetch() {
+  var today = formatDate(new Date());
+  console.log('=== 測試抓取: ' + today + ' ===');
+  CLINIC_NAMES.forEach(function(name) {
+    var id = getCalendarId(name);
+    if (!id) { console.log(name + ': ⚠️ 無日曆 ID，跳過'); return; }
+    var events = fetchClinicEvents(name, new Date());
+    var valid = events.filter(function(ev) { return isValidAppointment(ev.title, ev.desc, ev.start); });
+    console.log(name + ' (ID:'+id+'): 共 ' + events.length + ' 事件，有效 ' + valid.length);
+    valid.slice(0, 3).forEach(function(ev) { console.log('  ' + ev.title + ' @ ' + formatTime(ev.start)); });
+  });
+}
+
+// 一鍵寫入 Calendar ID 到 Script Properties
+// 使用方式：先在試算表或 GAS 裡呼叫 saveCalendarIds({林口:'your-id@...',...})
+function saveCalendarIds(idMap) {
+  var props = PropertiesService.getScriptProperties();
+  var keyMap = { '林口':'CAL_LINKOU','忠孝':'CAL_ZHONGXIAO','巨蛋':'CAL_JUEDAN','頭等艙':'CAL_FIRST','波音':'CAL_BOEING' };
+  Object.keys(idMap).forEach(function(name) {
+    if (keyMap[name]) { props.setProperty(keyMap[name], idMap[name]); console.log('已儲存 ' + name + ': ' + idMap[name]); }
+  });
+  _calCache = {}; // 清除記憶體快取
+  console.log('完成。請重新載入儀表板。');
 }

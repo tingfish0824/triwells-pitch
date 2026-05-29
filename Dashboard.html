@@ -288,6 +288,14 @@ function loadMonthly(){
 // ==================== RENDER TODAY ====================
 function renderToday(data){
   var html='';
+  // 若所有指標都為 0，提示可能原因
+  if(data.kpi&&data.kpi.totalAppointments===0&&data.kpi.workingDoctors===0){
+    html+='<div style="background:#FFF3E0;border:0.5px solid #BA7517;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#633806">'+
+      '<strong>⚠ 今日尚無資料</strong><br>可能原因：<br>'+
+      '① Google 日曆 ID 尚未設定 → 請在 GAS 編輯器執行 <code>testConfig()</code> 確認<br>'+
+      '② 今日診所無排診<br>'+
+      '③ 事件時間早於 08:00（會被自動過濾）</div>';
+  }
   html+=renderKPISection(data);
   html+=renderClinicBarsSection(data);
   html+=renderClinicDetailsSection(data);
