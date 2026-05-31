@@ -77,6 +77,12 @@ function parseDate(s) { var p=s.split('-'); return new Date(+p[0],+p[1]-1,+p[2])
 function pad2(n) { return String(n).padStart(2,'0'); }
 function formatTime(d) { return pad2(d.getHours())+':'+pad2(d.getMinutes()); }
 function daysBetween(a,b) { return Math.floor(Math.abs(b-a)/86400000); }
+function getShift(h) {
+  if (h>=9&&h<13) return '早';
+  if (h>=13&&h<18) return '午';
+  if (h>=18) return '晚';
+  return '';
+}
 
 // ── 解析收費 ─────────────────────────────────────────────────
 function parseAmount(text) {
@@ -241,11 +247,12 @@ function getDayData(dateStr) {
     events.forEach(function(ev){
       var valid=isValidAppointment(ev.title,ev.desc,ev.start);
       var dr=extractDoctorName(ev.title,ev.desc)||'值班醫師';
-      if (!doctorMap[dr]) doctorMap[dr]={ name:dr, clinic:clinicName, color:color, all:[], valid:[], amount:0, hourly:{} };
+      if (!doctorMap[dr]) doctorMap[dr]={ name:dr, clinic:clinicName, color:color, all:[], valid:[], amount:0, hourly:{}, shiftSet:{} };
       doctorMap[dr].all.push(ev);
       if (!valid) return;
 
-      var h=ev.start.getHours();
+      var h; try { h=parseInt(Utilities.formatDate(ev.start,'Asia/Taipei','H'),10); } catch(e2){ h=ev.start.getHours(); }
+      var shift=getShift(h);
       var timeStr=pad2(h)+':'+pad2(ev.start.getMinutes());
       var amt=parseAmount(ev.desc);
       var npFlag=isNP(ev.title,ev.desc);
@@ -256,6 +263,7 @@ function getDayData(dateStr) {
       doctorMap[dr].valid.push(ev);
       doctorMap[dr].amount+=amt;
       doctorMap[dr].hourly[h]=(doctorMap[dr].hourly[h]||0)+1;
+      if(shift) doctorMap[dr].shiftSet[shift]=true;
 
       out.treatmentPie[treatment]=(out.treatmentPie[treatment]||0)+1;
 
@@ -299,8 +307,9 @@ function getDayData(dateStr) {
       if (doc.valid.length===0) return;
       var seen={}, specialties=[];
       doc.valid.forEach(function(ev){ var t=parseTreatmentType(ev.title,ev.desc); if(t!=='其他'&&!seen[t]){seen[t]=true;specialties.push(t);} });
-      workingDocs.push({ name:dName, clinic:clinicName, color:color, sessions:doc.valid.length, amount:doc.amount, specialties:specialties, hourly:doc.hourly });
-      out.doctorRanking.push({ name:dName, clinic:clinicName, color:color, sessions:doc.valid.length, amount:doc.amount });
+      var sc=Object.keys(doc.shiftSet).length||1;
+      workingDocs.push({ name:dName, clinic:clinicName, color:color, sessions:doc.valid.length, amount:doc.amount, specialties:specialties, hourly:doc.hourly, shiftCount:sc });
+      out.doctorRanking.push({ name:dName, clinic:clinicName, color:color, sessions:doc.valid.length, amount:doc.amount, shiftCount:sc });
       out.heatmapData.push({ clinic:clinicName, doctor:dName, color:color, hourly:doc.hourly });
       out.kpi.workingDoctors++;
     });
@@ -412,8 +421,8 @@ function getWeekData(dateStr) {
     out.kpi.totalAppointments+=dd.kpi.totalAppointments;
     out.kpi.npCount+=dd.kpi.npCount;
     dd.doctorRanking.forEach(function(doc){
-      if (!out.doctorPerf[doc.name]) out.doctorPerf[doc.name]={ name:doc.name, clinic:doc.clinic, color:doc.color, amount:0, sessions:0 };
-      out.doctorPerf[doc.name].amount+=doc.amount; out.doctorPerf[doc.name].sessions+=doc.sessions;
+      if (!out.doctorPerf[doc.name]) out.doctorPerf[doc.name]={ name:doc.name, clinic:doc.clinic, color:doc.color, amount:0, sessions:0, shiftCount:0 };
+      out.doctorPerf[doc.name].amount+=doc.amount; out.doctorPerf[doc.name].sessions+=doc.sessions; out.doctorPerf[doc.name].shiftCount+=(doc.shiftCount||1);
     });
     dd.clinics.forEach(function(c){
       if (!out.clinicComp[c.name]) out.clinicComp[c.name]={ name:c.name, color:c.color, total:0, amount:0 };
@@ -456,8 +465,8 @@ function getMonthData(yearMonth) {
       out.kpi.npCount+=dd.kpi.npCount;
       dd.clinics.forEach(function(c){ out.clinicTrend[c.name].push(c.totalAppointments); out.clinicMonthly[c.name].total+=c.totalAppointments; out.clinicMonthly[c.name].amount+=c.totalAmount; });
       dd.doctorRanking.forEach(function(doc){
-        if (!out.doctorMonthly[doc.name]) out.doctorMonthly[doc.name]={name:doc.name,clinic:doc.clinic,color:doc.color,amount:0,sessions:0};
-        out.doctorMonthly[doc.name].amount+=doc.amount; out.doctorMonthly[doc.name].sessions+=doc.sessions;
+        if (!out.doctorMonthly[doc.name]) out.doctorMonthly[doc.name]={name:doc.name,clinic:doc.clinic,color:doc.color,amount:0,sessions:0,shiftCount:0};
+        out.doctorMonthly[doc.name].amount+=doc.amount; out.doctorMonthly[doc.name].sessions+=doc.sessions; out.doctorMonthly[doc.name].shiftCount+=(doc.shiftCount||1);
       });
       Object.keys(dd.treatmentPie).forEach(function(k){ out.treatmentPie[k]=(out.treatmentPie[k]||0)+dd.treatmentPie[k]; });
       dd.npList.forEach(function(np){ out.npList.push(Object.assign({date:ds},np)); out.npSource[np.source]=(out.npSource[np.source]||0)+1; });

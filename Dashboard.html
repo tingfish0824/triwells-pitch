@@ -7,86 +7,112 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root{
-  --color-background-primary:#ffffff;
-  --color-background-secondary:#f5f6fa;
-  --color-border-tertiary:#E8EAF0;
-  --color-text-primary:#1a1a2e;
-  --color-text-secondary:#6b7280;
-  --border-radius-lg:12px;
-  --border-radius-md:8px;
-  --brand:#2A5298;
+  --bg:#ffffff;--bg2:#f5f6fa;--border:#E8EAF0;--text:#1a1a2e;--text2:#6b7280;
+  --radius-lg:12px;--radius-md:8px;--brand:#2A5298;--panel-max:640px;
 }
 @media(prefers-color-scheme:dark){
-  :root{--color-background-primary:#1e2030;--color-background-secondary:#16192a;--color-border-tertiary:#2d3561;--color-text-primary:#e2e8f0;--color-text-secondary:#94a3b8;}
+  :root{--bg:#1e2030;--bg2:#16192a;--border:#2d3561;--text:#e2e8f0;--text2:#94a3b8;}
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--color-background-secondary);color:var(--color-text-primary);font-size:14px;min-height:100vh;padding-bottom:48px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg2);color:var(--text);font-size:14px;min-height:100vh;padding-bottom:60px}
+
 /* ── NAV ── */
-.tab-nav{display:flex;background:#fff;border-bottom:2px solid #E8EAF0;position:sticky;top:0;z-index:100}
-.tab-btn{flex:1;min-width:60px;padding:12px 4px;border:none;background:none;font-size:13px;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;white-space:nowrap}
-.tab-btn.active{color:#2A5298;border-bottom-color:#2A5298;font-weight:600}
+.tab-nav{display:flex;background:var(--bg);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:200}
+.tab-btn{flex:1;padding:12px 4px;border:none;background:none;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;white-space:nowrap}
+.tab-btn.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+
+/* ── DATE NAV BAR ── */
+.date-nav{display:flex;align-items:center;justify-content:center;gap:0;background:var(--bg);border-bottom:0.5px solid var(--border);position:sticky;top:46px;z-index:190;padding:6px 12px}
+.date-nav-btn{background:none;border:none;font-size:20px;color:var(--text2);cursor:pointer;padding:0 14px;line-height:1}
+.date-nav-label{font-size:13px;font-weight:700;color:var(--text);flex:1;text-align:center}
+.date-nav-cal{background:none;border:none;font-size:16px;cursor:pointer;padding:0 4px;color:var(--text2)}
+
 /* ── PANEL ── */
-.tab-panel{display:none;padding:12px 14px}
+.tab-panel{display:none;padding:12px 14px;max-width:var(--panel-max);margin:0 auto}
 .tab-panel.active{display:block}
+
 /* ── CARD ── */
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:.875rem 1rem;margin-bottom:10px}
-.section-title{font-size:13px;font-weight:700;color:var(--color-text-primary);margin-bottom:10px}
-.section-subtitle{font-size:11px;color:var(--color-text-secondary);margin-bottom:10px}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:.875rem 1rem;margin-bottom:10px}
+.section-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px}
+.section-subtitle{font-size:11px;color:var(--text2);margin-bottom:10px}
+
+/* ── COLLAPSIBLE CLINIC CARD ── */
+.clinic-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);margin-bottom:8px;overflow:hidden}
+.clinic-card-header{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.clinic-card-header:active{background:var(--bg2)}
+.clinic-card-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.clinic-card-name{font-weight:700;font-size:13px;flex:1}
+.clinic-card-meta{color:var(--text2);font-size:12px}
+.clinic-card-amt{font-weight:600;font-size:12px}
+.clinic-card-chevron{color:var(--text2);font-size:12px;margin-left:6px;transition:transform .2s}
+.clinic-card.open .clinic-card-chevron{transform:rotate(90deg)}
+.clinic-card-body{display:none;padding:0 14px 12px}
+.clinic-card.open .clinic-card-body{display:block}
+
 /* ── KPI ── */
 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.kpi-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem 1rem}
-.kpi-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
-.kpi-value{font-size:22px;font-weight:700;color:var(--color-text-primary);line-height:1.2}
+.kpi-card{background:var(--bg2);border-radius:var(--radius-md);padding:.75rem 1rem}
+.kpi-label{font-size:11px;color:var(--text2);margin-bottom:4px}
+.kpi-value{font-size:22px;font-weight:700;color:var(--text);line-height:1.2}
 .kpi-trend{font-size:10px;margin-top:4px}
-.kpi-trend.up{color:#1D9E75}.kpi-trend.down{color:#E24B4A}.kpi-trend.neutral{color:var(--color-text-secondary)}
-.kpi-note{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.kpi-trend.up{color:#1D9E75}.kpi-trend.down{color:#E24B4A}.kpi-trend.neutral{color:var(--text2)}
+.kpi-note{font-size:10px;color:var(--text2);margin-top:2px}
+
 /* ── BARS ── */
 .clinic-bar-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
-.clinic-bar-label{width:50px;text-align:right;color:var(--color-text-secondary);flex-shrink:0}
-.clinic-bar-track{flex:1;height:10px;background:var(--color-background-secondary);border-radius:5px;overflow:hidden}
+.clinic-bar-label{width:50px;text-align:right;color:var(--text2);flex-shrink:0}
+.clinic-bar-track{flex:1;height:10px;background:var(--bg2);border-radius:5px;overflow:hidden}
 .clinic-bar-fill{height:100%;border-radius:5px;transition:width .4s}
 .clinic-bar-count{width:24px;font-weight:600;flex-shrink:0}
 .clinic-bar-trend{font-size:10px;flex-shrink:0}
-.trend-red{color:#E24B4A}.trend-green{color:#1D9E75}.trend-neutral{color:var(--color-text-secondary)}
-/* ── DOCTOR BARS ── */
+.trend-red{color:#E24B4A}.trend-green{color:#1D9E75}.trend-neutral{color:var(--text2)}
+
+/* ── DOCTOR ROW (clinic detail) ── */
 .doctor-row{margin-bottom:8px}
 .doctor-row-header{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:12px}
 .doctor-name{font-weight:600;flex:1}
-.doctor-sessions{color:var(--color-text-secondary);font-size:11px}
-.doctor-amount{font-weight:600;color:var(--color-text-primary)}
-.doctor-bar-track{height:7px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden}
+.doctor-shift-label{color:var(--text2);font-size:11px}
+.doctor-sessions{color:var(--text2);font-size:11px}
+.doctor-amount{font-weight:600;color:var(--text)}
+.doctor-avg{font-size:10px;color:var(--text2)}
+.doctor-bar-track{height:7px;background:var(--bg2);border-radius:3px;overflow:hidden}
 .doctor-bar-fill{height:100%;border-radius:3px}
 .specialty-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
 .sptag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px}
+
 /* ── HEATMAP ── */
 .heatmap-wrap{overflow-x:auto}
-.heatmap-table{min-width:600px;width:100%;border-collapse:collapse}
-.hmap-hour-label{font-size:10px;color:var(--color-text-secondary);text-align:center;padding:2px 1px;width:38px}
-.hmap-doc-label{font-size:11px;color:var(--color-text-primary);padding:2px 6px 2px 0;white-space:nowrap;font-weight:500}
-.hmap-clinic-row td{font-size:10px;padding:4px 6px 2px;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary)}
-.hmap-cell{height:20px;border-radius:3px;text-align:center;font-size:10px;font-weight:600;line-height:20px;width:38px;min-width:38px}
-.hmap-legend{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;align-items:center;font-size:10px;color:var(--color-text-secondary)}
-.hmap-legend-chip{display:inline-block;width:32px;height:14px;border-radius:3px;vertical-align:middle;margin-right:3px}
+.heatmap-table{min-width:560px;width:100%;border-collapse:collapse}
+.hmap-hour-label{font-size:10px;color:var(--text2);text-align:center;padding:2px 1px;width:36px}
+.hmap-doc-label{font-size:11px;color:var(--text);padding:2px 6px 2px 0;white-space:nowrap;font-weight:500}
+.hmap-clinic-row td{font-size:10px;padding:4px 6px 2px;color:var(--text2);border-bottom:0.5px solid var(--border)}
+.hmap-cell{height:20px;border-radius:3px;text-align:center;font-size:10px;font-weight:600;line-height:20px;width:36px;min-width:36px}
+.hmap-legend{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;align-items:center;font-size:10px;color:var(--text2)}
+.hmap-legend-chip{display:inline-block;width:28px;height:12px;border-radius:3px;vertical-align:middle;margin-right:3px}
+
 /* ── PIE ── */
 .pie-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .pie-legend-item{display:flex;align-items:center;gap:4px;font-size:11px}
 .pie-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
 /* ── NP ── */
 .np-source-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-.np-source-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px;text-align:center}
+.np-source-card{background:var(--bg2);border-radius:var(--radius-md);padding:8px;text-align:center}
 .np-source-num{font-size:20px;font-weight:700}
-.np-source-label{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
-.np-item{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.np-source-label{font-size:10px;color:var(--text2);margin-top:2px}
+.np-item{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px}
 .np-item:last-child{border-bottom:none}
 .np-badge{font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600}
+
 /* ── FEE ── */
-.fee-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.fee-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px}
 .fee-item:last-child{border-bottom:none}
-.fee-amount{font-weight:700;color:var(--color-text-primary);min-width:70px;text-align:right}
-.fee-meta{color:var(--color-text-secondary);font-size:11px}
-.fee-warn{font-size:11px;color:#BA7517;margin-top:8px;padding-top:8px;border-top:0.5px solid var(--color-border-tertiary)}
+.fee-amount{font-weight:700;color:var(--text);min-width:70px;text-align:right}
+.fee-meta{color:var(--text2);font-size:11px}
+.fee-warn{font-size:11px;color:#BA7517;margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border)}
+
 /* ── REMINDERS ── */
-.reminder-item{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.reminder-item{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px}
 .reminder-item:last-child{border-bottom:none}
 .rm-badge{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600}
 .rm-badge-pending{background:#FFF3E0;color:#E65100}
@@ -96,116 +122,139 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .rm-btn-track{background:#FFF3E0;color:#E65100}
 .rm-btn-resched{background:#FFEBEE;color:#B71C1C}
 .rm-btn-return{background:#E6F1FB;color:#0C447C}
+
 /* ── RESCHEDULING ── */
-.resched-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.resched-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px}
 .resched-item:last-child{border-bottom:none}
 .resched-badge{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600}
+
 /* ── ALERTS ── */
 .alert-list{display:flex;flex-direction:column;gap:8px}
 .alert-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;padding:4px 0}
 .alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
 .alert-dot-red{background:#E24B4A}.alert-dot-orange{background:#BA7517}
-.alert-none{background:#E1F5EE;border:0.5px solid #9FE1CB;border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;color:#085041;font-weight:600}
+.alert-none{background:#E1F5EE;border:0.5px solid #9FE1CB;border-radius:var(--radius-md);padding:10px 12px;font-size:12px;color:#085041;font-weight:600}
+
 /* ── TWO-COL ── */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-/* ── CALENDAR ── */
-.cal-header{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
-.cal-day-label{text-align:center;font-size:11px;color:var(--color-text-secondary);padding:4px 0}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cal-cell{min-height:44px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:4px;cursor:pointer;transition:background .15s}
-.cal-cell:hover{background:var(--color-background-secondary)}
-.cal-cell.selected{background:#E6F1FB}
-.cal-cell.today-cell{border:1.5px solid #2A5298}
-.cal-cell.future-cell .cal-date-num{color:#b0b8c9}
-.cal-cell.other-month{opacity:.35}
-.cal-date-num{font-size:12px;font-weight:600;color:var(--color-text-primary)}
-.cal-cell.today-cell .cal-date-num{color:#2A5298}
-.cal-dots{display:flex;gap:2px;flex-wrap:wrap;margin-top:2px}
-.cal-dot{width:4px;height:4px;border-radius:50%}
-.cal-count{font-size:10px;color:var(--color-text-secondary);margin-top:1px}
-.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.cal-nav-btn{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:13px}
-.cal-month-label{font-size:14px;font-weight:700}
-/* ── WEEK ── */
+
+/* ── WEEK DOC ROW (compact) ── */
+.week-doc-row{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px}
+.week-doc-row:last-child{border-bottom:none}
+.wdr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.wdr-name{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wdr-clinic{color:var(--text2);font-size:10px;flex-shrink:0}
+.wdr-stats{color:var(--text2);font-size:11px;flex-shrink:0;white-space:nowrap}
+.wdr-amt{font-weight:700;flex-shrink:0;min-width:60px;text-align:right}
+.wdr-avg{font-size:10px;color:var(--text2);flex-shrink:0;white-space:nowrap}
+
+/* ── WEEK BARS ── */
 .week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.week-nav-btn{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:13px}
+.week-nav-btn{background:var(--bg2);border:0.5px solid var(--border);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:13px}
 .week-range-label{font-size:13px;font-weight:700}
 .week-bar-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
-.week-bar-day{width:28px;flex-shrink:0;color:var(--color-text-secondary)}
-.week-bar-track{flex:1;height:16px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden}
+.week-bar-day{width:28px;flex-shrink:0;color:var(--text2)}
+.week-bar-track{flex:1;height:16px;background:var(--bg2);border-radius:4px;overflow:hidden}
 .week-bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:600;color:white;min-width:2px;transition:width .4s}
 .week-bar-amt{width:70px;text-align:right;font-weight:600;flex-shrink:0}
-.doctor-perf-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px;margin-bottom:8px}
-.doctor-perf-header{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.clinic-dot-sm{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.doctor-perf-name{font-weight:700;font-size:13px;flex:1}
-.doctor-perf-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
-.stat-mini{background:var(--color-background-primary);border-radius:6px;padding:6px;text-align:center}
-.stat-mini-val{font-size:13px;font-weight:700}
-.stat-mini-label{font-size:10px;color:var(--color-text-secondary)}
-/* ── MONTH ── */
-.month-doctor-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+
+/* ── MONTH DOCTOR ROW ── */
+.month-doctor-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px}
 .month-doctor-row:last-child{border-bottom:none}
-.rank-num{width:18px;color:var(--color-text-secondary);font-size:11px;flex-shrink:0}
+.rank-num{width:18px;color:var(--text2);font-size:11px;flex-shrink:0}
 .month-doctor-name{flex:1;font-weight:600}
-.month-doctor-meta{color:var(--color-text-secondary);font-size:11px}
+.month-doctor-meta{color:var(--text2);font-size:11px}
 .month-doctor-amt{font-weight:700;min-width:70px;text-align:right}
-.month-fee-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.month-fee-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px}
 .month-fee-item:last-child{border-bottom:none}
+
 /* ── LOADING ── */
-.loading{text-align:center;padding:40px;color:var(--color-text-secondary);font-size:13px}
+.loading{text-align:center;padding:40px;color:var(--text2);font-size:13px}
+
 /* ── FOOTER ── */
-.footer{text-align:center;font-size:11px;color:var(--color-text-secondary);padding:20px 14px 8px;border-top:0.5px solid var(--color-border-tertiary);margin-top:10px}
+.footer{text-align:center;font-size:11px;color:var(--text2);padding:20px 14px 8px;border-top:0.5px solid var(--border);margin-top:10px}
+
 /* ── VP TAG ── */
 .vp-tag{font-size:10px;padding:1px 5px;background:#E6F1FB;color:#0C447C;border-radius:3px;margin-left:4px}
+
 /* ── PROGRESS BAR ── */
-.progress-track{height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden;margin-top:6px}
-.progress-fill{height:100%;border-radius:3px;background:#2A5298;transition:width .4s}
+.progress-track{height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;border-radius:3px;background:var(--brand);transition:width .4s}
+
+/* ── BOTTOM SHEET CALENDAR ── */
+.cal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500}
+.cal-overlay.open{display:block}
+.cal-sheet{position:fixed;bottom:0;left:0;right:0;max-width:var(--panel-max);margin:0 auto;background:var(--bg);border-radius:18px 18px 0 0;z-index:510;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,.72,0,1);padding:16px 16px 28px;max-height:88vh;overflow-y:auto}
+.cal-sheet.open{transform:translateY(0)}
+.cal-sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-nav-btn{background:var(--bg2);border:0.5px solid var(--border);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:13px}
+.cal-month-label{font-size:14px;font-weight:700}
+.cal-header{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+.cal-day-label{text-align:center;font-size:11px;color:var(--text2);padding:4px 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-cell{min-height:44px;background:var(--bg);border:0.5px solid var(--border);border-radius:6px;padding:4px;cursor:pointer;transition:background .15s}
+.cal-cell:hover{background:var(--bg2)}
+.cal-cell.selected{background:#E6F1FB}
+.cal-cell.today-cell{border:1.5px solid var(--brand)}
+.cal-cell.future-cell .cal-date-num{color:#b0b8c9}
+.cal-cell.other-month{opacity:.35}
+.cal-date-num{font-size:12px;font-weight:600;color:var(--text)}
+.cal-cell.today-cell .cal-date-num{color:var(--brand)}
+.cal-dots{display:flex;gap:2px;flex-wrap:wrap;margin-top:2px}
+.cal-dot{width:4px;height:4px;border-radius:50%}
+.cal-count{font-size:10px;color:var(--text2);margin-top:1px}
 </style>
 </head>
 <body>
 
 <nav class="tab-nav">
   <button class="tab-btn active" onclick="switchTab('today')">今日</button>
-  <button class="tab-btn" onclick="switchTab('date')">選日期</button>
   <button class="tab-btn" onclick="switchTab('weekly')">週報</button>
   <button class="tab-btn" onclick="switchTab('monthly')">月分析</button>
 </nav>
 
-<div id="panel-today"  class="tab-panel active"><div class="loading">載入今日資料中…</div></div>
-<div id="panel-date"   class="tab-panel"><div id="cal-wrap"></div><div id="day-detail"></div></div>
-<div id="panel-weekly" class="tab-panel"><div class="loading">載入週報中…</div></div>
-<div id="panel-monthly"class="tab-panel"><div class="loading">載入月分析中…</div></div>
+<div class="date-nav" id="date-nav">
+  <button class="date-nav-btn" onclick="stepDate(-1)">‹</button>
+  <span class="date-nav-label" id="date-nav-label">—</span>
+  <button class="date-nav-btn" onclick="stepDate(1)">›</button>
+  <button class="date-nav-cal" onclick="openCal()" title="選擇日期">📅</button>
+</div>
+
+<div id="panel-today"   class="tab-panel active"><div class="loading">載入今日資料中…</div></div>
+<div id="panel-weekly"  class="tab-panel"><div class="loading">載入週報中…</div></div>
+<div id="panel-monthly" class="tab-panel"><div class="loading">載入月分析中…</div></div>
 
 <div class="footer">收費數據來源為約診備註欄金額估算，非實際帳務數字 · 三井牙科體系</div>
 
+<!-- Bottom sheet calendar -->
+<div class="cal-overlay" id="cal-overlay" onclick="closeCal()"></div>
+<div class="cal-sheet" id="cal-sheet">
+  <div class="cal-sheet-handle"></div>
+  <div id="cal-sheet-inner"></div>
+</div>
+
 <script>
 // ==================== CONSTANTS ====================
-var CC = { '林口':'#1D9E75','忠孝':'#7F77DD','巨蛋':'#378ADD','頭等艙':'#BA7517','波音':'#D85A30' };
-var TS = {
-  '洗牙/定檢':  {bg:'#E1F5EE',c:'#085041'},
-  '全口檢查':   {bg:'#FBEAF0',c:'#72243E'},
-  '補牙':       {bg:'#FAEEDA',c:'#633806'},
-  '根管':       {bg:'#FCEBEB',c:'#791F1F'},
-  '假牙/冠':    {bg:'#E6F1FB',c:'#0C447C'},
-  '拔牙':       {bg:'#F1EFE8',c:'#444441'},
-  '牙周':       {bg:'#E1F5EE',c:'#085041'},
-  '矯正':       {bg:'#EEEDFE',c:'#3C3489'},
-  '植牙':       {bg:'#EAF3DE',c:'#27500A'},
-  '全口重建':   {bg:'#FAEEDA',c:'#412402'},
-  '美白/特殊':  {bg:'#FBEAF0',c:'#4B1528'},
-  '新患者':     {bg:'#EAF3DE',c:'#27500A'},
-  '其他':       {bg:'#f0f0f0',c:'#555'}
+var CC={'林口':'#1D9E75','忠孝':'#7F77DD','巨蛋':'#378ADD','頭等艙':'#BA7517','波音':'#D85A30'};
+var TS={
+  '洗牙/定檢':{bg:'#E1F5EE',c:'#085041'},'全口檢查':{bg:'#FBEAF0',c:'#72243E'},
+  '補牙':{bg:'#FAEEDA',c:'#633806'},'根管':{bg:'#FCEBEB',c:'#791F1F'},
+  '假牙/冠':{bg:'#E6F1FB',c:'#0C447C'},'拔牙':{bg:'#F1EFE8',c:'#444441'},
+  '牙周':{bg:'#E1F5EE',c:'#085041'},'矯正':{bg:'#EEEDFE',c:'#3C3489'},
+  '植牙':{bg:'#EAF3DE',c:'#27500A'},'全口重建':{bg:'#FAEEDA',c:'#412402'},
+  '美白/特殊':{bg:'#FBEAF0',c:'#4B1528'},'新患者':{bg:'#EAF3DE',c:'#27500A'},'其他':{bg:'#f0f0f0',c:'#555'}
 };
-var PIE_COLORS = ['#1D9E75','#7F77DD','#378ADD','#BA7517','#D85A30','#5DCAA5','#9FE1CB','#9b87f5','#60a5fa','#fbbf24','#f87171','#34d399'];
-var WEEK_TARGET = 550000;
-var HMAP_HOURS = [9,10,11,12,13,14,15,16,17,18,19,20,21];
-var DAY_LABELS = ['日','一','二','三','四','五','六'];
+var PIE_COLORS=['#1D9E75','#7F77DD','#378ADD','#BA7517','#D85A30','#5DCAA5','#9FE1CB','#9b87f5','#60a5fa','#fbbf24','#f87171','#34d399'];
+var WEEK_TARGET=550000;
+var HMAP_HOURS=[9,10,11,12,13,14,15,16,17,18,19,20,21];
+var DAY_LABELS=['日','一','二','三','四','五','六'];
 
 // ==================== STATE ====================
-var todayStr = (function(){ var d=new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); })();
-var state = {
+var todayStr=(function(){var d=new Date();return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());})();
+var state={
   currentTab:'today',
+  viewDate:todayStr,
   todayData:null,
   weekDate:todayStr,
   weekData:null,
@@ -213,8 +262,6 @@ var state = {
   monthData:null,
   calYM:todayStr.slice(0,7),
   calData:{},
-  selDate:null,
-  selDateData:null,
   charts:{}
 };
 
@@ -225,76 +272,85 @@ function fmtNum(n){return n?n.toLocaleString():'0';}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function spTag(label){var s=TS[label]||TS['其他'];return '<span class="sptag" style="background:'+s.bg+';color:'+s.c+'">'+esc(label)+'</span>';}
 function npBadge(src){var map={'波音轉介':{bg:'#FCEBEB',c:'#791F1F'},'體系OP':{bg:'#EAF3DE',c:'#27500A'},'外部全新':{bg:'#E6F1FB',c:'#0C447C'}};var s=map[src]||map['外部全新'];return '<span class="np-badge" style="background:'+s.bg+';color:'+s.c+'">'+esc(src)+'</span>';}
-function heatColor(n){if(!n)return{bg:'var(--color-background-secondary)',c:'transparent'};if(n<=2)return{bg:'#9FE1CB',c:'#085041'};if(n===3)return{bg:'#5DCAA5',c:'#085041'};return{bg:'#1D9E75',c:'#ffffff'};}
-function trendBadge(cur,prev){if(!prev)return'<span class="kpi-trend neutral">—</span>';var diff=cur-prev;var pct=prev>0?Math.round(Math.abs(diff)/prev*100):0;if(diff>0)return'<span class="kpi-trend up">↑ 較昨日 +'+fmtNum(diff)+'</span>';if(diff<0)return'<span class="kpi-trend down">↓ 較昨日 '+fmtNum(diff)+'</span>';return'<span class="kpi-trend neutral">= 與昨日持平</span>';}
+function heatColor(n){if(!n)return{bg:'var(--bg2)',c:'transparent'};if(n<=2)return{bg:'#9FE1CB',c:'#085041'};if(n===3)return{bg:'#5DCAA5',c:'#085041'};return{bg:'#1D9E75',c:'#ffffff'};}
+function trendBadge(cur,prev){if(!prev)return'<span class="kpi-trend neutral">—</span>';var diff=cur-prev;if(diff>0)return'<span class="kpi-trend up">↑ 較昨日 +'+fmtNum(diff)+'</span>';if(diff<0)return'<span class="kpi-trend down">↓ 較昨日 '+fmtNum(diff)+'</span>';return'<span class="kpi-trend neutral">= 與昨日持平</span>';}
 function amtTrendBadge(cur,prev){if(!prev)return'<span class="kpi-trend neutral">—</span>';var diff=cur-prev;if(diff>0)return'<span class="kpi-trend up">↑ 較昨日 +'+fmtAmt(diff)+'</span>';if(diff<0)return'<span class="kpi-trend down">↓ 較昨日 '+fmtAmt(diff)+'</span>';return'<span class="kpi-trend neutral">= 與昨日持平</span>';}
 function destroyChart(key){if(state.charts[key]){state.charts[key].destroy();delete state.charts[key];}}
 function getEl(id){return document.getElementById(id);}
 function dayName(ds){var d=new Date(ds.replace(/-/g,'/')+'T00:00:00');return DAY_LABELS[d.getDay()];}
+function fmtDateLabel(ds){var p=ds.split('-');return p[1]+'月'+p[2]+'日 ('+dayName(ds)+')';}
+function addDays(ds,n){var d=new Date(ds.replace(/-/g,'/')+'T00:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+
+// ==================== DATE NAV ====================
+function updateDateNavLabel(){
+  var ds=state.viewDate;
+  var label=ds===todayStr?'今天 '+fmtDateLabel(ds):fmtDateLabel(ds);
+  getEl('date-nav-label').textContent=label;
+}
+function stepDate(dir){
+  var next=addDays(state.viewDate,dir);
+  state.viewDate=next;
+  state.todayData=null;
+  updateDateNavLabel();
+  if(state.currentTab==='today') loadToday();
+}
 
 // ==================== TAB ====================
 function switchTab(tab){
   state.currentTab=tab;
-  document.querySelectorAll('.tab-btn').forEach(function(b,i){b.classList.toggle('active',['today','date','weekly','monthly'][i]===tab);});
+  document.querySelectorAll('.tab-btn').forEach(function(b,i){b.classList.toggle('active',['today','weekly','monthly'][i]===tab);});
   document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
   getEl('panel-'+tab).classList.add('active');
+  // Date nav only shown for today tab
+  getEl('date-nav').style.display=tab==='today'?'flex':'none';
   if(tab==='today'&&!state.todayData) loadToday();
-  if(tab==='date'&&!Object.keys(state.calData).length) loadCalGrid();
   if(tab==='weekly'&&!state.weekData) loadWeekly();
   if(tab==='monthly'&&!state.monthData) loadMonthly();
 }
 
 // ==================== LOAD ====================
 function loadToday(){
-  getEl('panel-today').innerHTML='<div class="loading">載入今日資料中…</div>';
+  getEl('panel-today').innerHTML='<div class="loading">載入資料中…</div>';
   if(typeof google!=='undefined'&&google.script){
-    google.script.run.withSuccessHandler(function(json){
-      state.todayData=JSON.parse(json);renderToday(state.todayData);
-    }).withFailureHandler(function(e){getEl('panel-today').innerHTML='<div class="loading">載入失敗：'+esc(e.message)+'</div>';}).getTodayData();
-  }
-}
-function loadDateData(ds){
-  if(typeof google!=='undefined'&&google.script){
-    google.script.run.withSuccessHandler(function(json){
-      state.selDateData=JSON.parse(json);renderDayDetail(state.selDateData);
-    }).withFailureHandler(function(){}).getDayDataForClient(ds);
-  }
-}
-function loadCalGrid(){
-  renderCalendar(state.calYM,{});
-  if(typeof google!=='undefined'&&google.script){
-    google.script.run.withSuccessHandler(function(json){
-      state.calData=JSON.parse(json);renderCalendar(state.calYM,state.calData);
-    }).withFailureHandler(function(){}).getCalendarGridDataForClient(state.calYM);
+    google.script.run
+      .withSuccessHandler(function(json){state.todayData=JSON.parse(json);renderToday(state.todayData);})
+      .withFailureHandler(function(e){getEl('panel-today').innerHTML='<div class="loading">載入失敗：'+esc(e.message)+'</div>';})
+      .getDayDataForClient(state.viewDate);
   }
 }
 function loadWeekly(){
   getEl('panel-weekly').innerHTML='<div class="loading">載入週報中…</div>';
   if(typeof google!=='undefined'&&google.script){
-    google.script.run.withSuccessHandler(function(json){
-      state.weekData=JSON.parse(json);renderWeekly(state.weekData);
-    }).withFailureHandler(function(e){getEl('panel-weekly').innerHTML='<div class="loading">載入失敗</div>';}).getWeekDataForClient(state.weekDate);
+    google.script.run
+      .withSuccessHandler(function(json){state.weekData=JSON.parse(json);renderWeekly(state.weekData);})
+      .withFailureHandler(function(){getEl('panel-weekly').innerHTML='<div class="loading">載入失敗</div>';})
+      .getWeekDataForClient(state.weekDate);
   }
 }
 function loadMonthly(){
   getEl('panel-monthly').innerHTML='<div class="loading">載入月分析中…</div>';
   if(typeof google!=='undefined'&&google.script){
-    google.script.run.withSuccessHandler(function(json){
-      state.monthData=JSON.parse(json);renderMonthly(state.monthData);
-    }).withFailureHandler(function(){getEl('panel-monthly').innerHTML='<div class="loading">載入失敗</div>';}).getMonthDataForClient(state.monthYM);
+    google.script.run
+      .withSuccessHandler(function(json){state.monthData=JSON.parse(json);renderMonthly(state.monthData);})
+      .withFailureHandler(function(){getEl('panel-monthly').innerHTML='<div class="loading">載入失敗</div>';})
+      .getMonthDataForClient(state.monthYM);
+  }
+}
+function loadCalGridData(){
+  if(typeof google!=='undefined'&&google.script){
+    google.script.run
+      .withSuccessHandler(function(json){state.calData=JSON.parse(json);renderCalSheet(state.calYM,state.calData);})
+      .withFailureHandler(function(){})
+      .getCalendarGridDataForClient(state.calYM);
   }
 }
 
 // ==================== RENDER TODAY ====================
 function renderToday(data){
   var html='';
-  // 若所有指標都為 0，提示可能原因
   if(data.kpi&&data.kpi.totalAppointments===0&&data.kpi.workingDoctors===0){
     html+='<div style="background:#FFF3E0;border:0.5px solid #BA7517;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#633806">'+
-      '<strong>⚠ 今日尚無資料</strong><br>可能原因：<br>'+
-      '① Google 日曆 ID 尚未設定 → 請在 GAS 編輯器執行 <code>testConfig()</code> 確認<br>'+
-      '② 今日診所無排診<br>'+
-      '③ 事件時間早於 08:00（會被自動過濾）</div>';
+      '<strong>⚠ 今日尚無資料</strong><br>可能原因：① Google 日曆 ID 尚未設定 → 執行 <code>testConfig()</code> 確認<br>② 今日診所無排診<br>③ 事件時間早於 08:00</div>';
   }
   html+=renderKPISection(data);
   html+=renderClinicBarsSection(data);
@@ -311,12 +367,12 @@ function renderToday(data){
 }
 
 function renderKPISection(data){
-  var k=data.kpi, ky=data.kpiYesterday||{};
+  var k=data.kpi,ky=data.kpiYesterday||{};
   return '<div class="kpi-grid">'+
-    kpiCard('今日總約診',k.totalAppointments,trendBadge(k.totalAppointments,ky.totalAppointments))+
-    kpiCard('已知收費',fmtAmt(k.totalAmount),amtTrendBadge(k.totalAmount,ky.totalAmount),'<div class="kpi-note">備註金額估算·約實際 70-100%</div>')+
+    kpiCard('總約診',k.totalAppointments,trendBadge(k.totalAppointments,ky.totalAppointments))+
+    kpiCard('已知收費',fmtAmt(k.totalAmount),amtTrendBadge(k.totalAmount,ky.totalAmount),'<div class="kpi-note">備註估算約 70-100%</div>')+
     kpiCard('新患者 NP',k.npCount,trendBadge(k.npCount,ky.npCount))+
-    kpiCard('出診醫師數',k.workingDoctors,trendBadge(k.workingDoctors,ky.workingDoctors))+
+    kpiCard('出診醫師',k.workingDoctors,trendBadge(k.workingDoctors,ky.workingDoctors))+
   '</div>';
 }
 function kpiCard(label,val,trend,extra){
@@ -334,8 +390,8 @@ function renderClinicBarsSection(data){
     var trendHtml='';
     if(lwsd>0){
       if(drop>=0.3) trendHtml='<span class="clinic-bar-trend trend-red">⚠ 較上週-'+Math.round(drop*100)+'%</span>';
-      else if(drop>0) trendHtml='<span class="clinic-bar-trend trend-neutral">↓ '+Math.round(drop*100)+'%</span>';
-      else trendHtml='<span class="clinic-bar-trend trend-green">↑ '+Math.round(Math.abs(drop)*100)+'%</span>';
+      else if(drop>0) trendHtml='<span class="clinic-bar-trend trend-neutral">↓'+Math.round(drop*100)+'%</span>';
+      else trendHtml='<span class="clinic-bar-trend trend-green">↑'+Math.round(Math.abs(drop)*100)+'%</span>';
     }
     html+='<div class="clinic-bar-item"><span class="clinic-bar-label">'+esc(c.name)+'</span><div class="clinic-bar-track"><div class="clinic-bar-fill" style="width:'+pct+'%;background:'+c.color+'"></div></div><span class="clinic-bar-count">'+c.totalAppointments+'</span>'+trendHtml+'</div>';
   });
@@ -347,64 +403,81 @@ function renderClinicDetailsSection(data){
   if(!data.clinics) return '';
   var html='';
   data.clinics.forEach(function(c){
-    if(c.doctors&&c.doctors.length===0) return;
-    var maxSess=c.doctors&&c.doctors.length?Math.max.apply(null,c.doctors.map(function(d){return d.sessions;})):1;
-    html+='<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+c.color+'"></span><span style="font-weight:700;font-size:13px">'+esc(c.name)+'</span><span style="color:var(--color-text-secondary);font-size:12px">'+c.totalAppointments+' 筆</span><span style="font-weight:600;font-size:12px;margin-left:auto">'+fmtAmt(c.totalAmount)+'</span></div>';
-    (c.doctors||[]).forEach(function(doc){
+    if(!c.doctors||c.doctors.length===0) return;
+    var maxSess=Math.max.apply(null,c.doctors.map(function(d){return d.sessions;}));
+    var isOpen=c.doctors.length<=2;
+    html+='<div class="clinic-card'+(isOpen?' open':'')+'" id="cc-'+esc(c.name)+'">';
+    html+='<div class="clinic-card-header" onclick="toggleClinic(\''+esc(c.name)+'\')">';
+    html+='<span class="clinic-card-dot" style="background:'+c.color+'"></span>';
+    html+='<span class="clinic-card-name">'+esc(c.name)+'</span>';
+    html+='<span class="clinic-card-meta">'+c.totalAppointments+' 筆</span>';
+    html+='<span class="clinic-card-amt">'+fmtAmt(c.totalAmount)+'</span>';
+    html+='<span class="clinic-card-chevron">›</span></div>';
+    html+='<div class="clinic-card-body">';
+    c.doctors.forEach(function(doc){
       var pct=maxSess>0?Math.round(doc.sessions/maxSess*100):0;
-      html+='<div class="doctor-row"><div class="doctor-row-header"><span class="doctor-name">'+esc(doc.name)+'</span><span class="doctor-sessions">'+doc.sessions+' 診</span><span class="doctor-amount">'+fmtAmt(doc.amount)+'</span></div><div class="doctor-bar-track"><div class="doctor-bar-fill" style="width:'+pct+'%;background:'+c.color+'"></div></div>';
+      var sc=doc.shiftCount||1;
+      var avg=sc>0?Math.round(doc.amount/sc):0;
+      html+='<div class="doctor-row"><div class="doctor-row-header">';
+      html+='<span class="doctor-name">'+esc(doc.name)+'</span>';
+      html+='<span class="doctor-shift-label">'+sc+'診·'+doc.sessions+'人次</span>';
+      html+='<span class="doctor-amount">'+fmtAmt(doc.amount)+'</span>';
+      html+='<span class="doctor-avg">均'+fmtAmt(avg)+'/診</span></div>';
+      html+='<div class="doctor-bar-track"><div class="doctor-bar-fill" style="width:'+pct+'%;background:'+c.color+'"></div></div>';
       if(doc.specialties&&doc.specialties.length) html+='<div class="specialty-tags">'+doc.specialties.map(spTag).join('')+'</div>';
       html+='</div>';
     });
-    html+='</div>';
+    html+='</div></div>';
   });
   return html;
+}
+
+function toggleClinic(name){
+  var el=getEl('cc-'+name);
+  if(el) el.classList.toggle('open');
 }
 
 function renderHeatmapSection(data){
   if(!data.heatmapData||!data.heatmapData.length) return '';
   var grouped={};
-  data.heatmapData.forEach(function(row){
-    if(!grouped[row.clinic]) grouped[row.clinic]=[];
-    grouped[row.clinic].push(row);
-  });
+  data.heatmapData.forEach(function(row){if(!grouped[row.clinic])grouped[row.clinic]=[];grouped[row.clinic].push(row);});
   var html='<div class="card"><div class="section-title">時段密度熱力圖</div><div class="heatmap-wrap"><table class="heatmap-table"><thead><tr><th class="hmap-doc-label"></th>';
   HMAP_HOURS.forEach(function(h){html+='<th class="hmap-hour-label">'+h+'</th>';});
   html+='</tr></thead><tbody>';
   Object.keys(grouped).forEach(function(clinic){
     var rows=grouped[clinic];
     var color=CC[clinic]||'#888';
-    html+='<tr class="hmap-clinic-row"><td colspan="'+(HMAP_HOURS.length+1)+'"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+color+';margin-right:4px;vertical-align:middle"></span>'+esc(clinic)+'</td></tr>';
+    html+='<tr class="hmap-clinic-row"><td colspan="'+(HMAP_HOURS.length+1)+'"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:'+color+';margin-right:4px;vertical-align:middle"></span>'+esc(clinic)+'</td></tr>';
     rows.forEach(function(row){
       html+='<tr><td class="hmap-doc-label">'+esc(row.doctor)+'</td>';
-      HMAP_HOURS.forEach(function(h){
-        var n=row.hourly[h]||0;
-        var hc=heatColor(n);
-        html+='<td><div class="hmap-cell" style="background:'+hc.bg+';color:'+hc.c+'">'+(n?n:'')+'</div></td>';
-      });
+      HMAP_HOURS.forEach(function(h){var n=row.hourly[h]||0;var hc=heatColor(n);html+='<td><div class="hmap-cell" style="background:'+hc.bg+';color:'+hc.c+'">'+(n?n:'')+'</div></td>';});
       html+='</tr>';
     });
   });
   html+='</tbody></table></div>';
-  html+='<div class="hmap-legend"><span>凡例：</span><span><span class="hmap-legend-chip" style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary)"></span>0診</span><span><span class="hmap-legend-chip" style="background:#9FE1CB"></span>1-2診</span><span><span class="hmap-legend-chip" style="background:#5DCAA5"></span>3診</span><span><span class="hmap-legend-chip" style="background:#1D9E75"></span>4診+</span></div>';
+  html+='<div class="hmap-legend"><span>凡例：</span><span><span class="hmap-legend-chip" style="background:var(--bg2);border:0.5px solid var(--border)"></span>0</span><span><span class="hmap-legend-chip" style="background:#9FE1CB"></span>1-2</span><span><span class="hmap-legend-chip" style="background:#5DCAA5"></span>3</span><span><span class="hmap-legend-chip" style="background:#1D9E75"></span>4+</span></div>';
   html+='</div>';
   return html;
 }
 
 function renderDoctorPieSection(data){
   var html='<div class="two-col">';
-  // 醫師排行
-  html+='<div class="card"><div class="section-title">全體系醫師排行</div>';
+  html+='<div class="card"><div class="section-title">醫師排行</div>';
   var maxAmt=data.doctorRanking&&data.doctorRanking.length?Math.max.apply(null,data.doctorRanking.map(function(d){return d.amount;})):1;
-  (data.doctorRanking||[]).slice(0,10).forEach(function(doc,i){
+  (data.doctorRanking||[]).slice(0,8).forEach(function(doc,i){
     var pct=maxAmt>0?Math.round(doc.amount/maxAmt*100):0;
-    html+='<div class="clinic-bar-item"><span style="font-size:11px;color:var(--color-text-secondary);width:18px">'+(i+1)+'</span><span style="flex:1;font-weight:600;font-size:12px">'+esc(doc.name)+'</span>';
-    html+='<div class="clinic-bar-track" style="width:60px"><div class="clinic-bar-fill" style="width:'+pct+'%;background:'+doc.color+'"></div></div>';
-    html+='<span style="width:60px;text-align:right;font-size:11px;font-weight:600">'+fmtAmt(doc.amount)+'</span></div>';
+    var sc=doc.shiftCount||1;
+    html+='<div style="margin-bottom:7px">';
+    html+='<div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">';
+    html+='<span style="font-size:10px;color:var(--text2);width:14px">'+(i+1)+'</span>';
+    html+='<span style="flex:1;font-weight:600;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(doc.name)+'</span>';
+    html+='<span style="font-size:10px;font-weight:700">'+fmtAmt(doc.amount)+'</span></div>';
+    html+='<div style="display:flex;align-items:center;gap:4px">';
+    html+='<div class="clinic-bar-track" style="flex:1;height:5px"><div class="clinic-bar-fill" style="width:'+pct+'%;background:'+doc.color+'"></div></div>';
+    html+='<span style="font-size:10px;color:var(--text2)">'+sc+'診·'+doc.sessions+'人</span></div></div>';
   });
   html+='</div>';
-  // 療程圓餅
-  html+='<div class="card"><div class="section-title">療程分布</div><canvas id="pie-chart-today" style="max-height:160px"></canvas><div class="pie-legend" id="pie-legend-today"></div></div>';
+  html+='<div class="card"><div class="section-title">療程分布</div><canvas id="pie-chart-today" style="max-height:150px"></canvas><div class="pie-legend" id="pie-legend-today"></div></div>';
   html+='</div>';
   return html;
 }
@@ -413,7 +486,7 @@ function renderNPSection(data){
   var np=data.npList||[];
   var src={'波音轉介':0,'外部全新':0,'體系OP':0};
   np.forEach(function(n){src[n.source]=(src[n.source]||0)+1;});
-  var html='<div class="card"><div class="section-title">NP 新患者來源分析</div>';
+  var html='<div class="card"><div class="section-title">NP 新患者</div>';
   html+='<div class="np-source-grid">';
   ['波音轉介','外部全新','體系OP'].forEach(function(k){
     html+='<div class="np-source-card"><div class="np-source-num" style="color:'+(k==='波音轉介'?'#D85A30':k==='體系OP'?'#1D9E75':'#378ADD')+'">'+src[k]+'</div><div class="np-source-label">'+esc(k)+'</div></div>';
@@ -421,10 +494,10 @@ function renderNPSection(data){
   html+='</div>';
   np.forEach(function(n){
     html+='<div class="np-item">'+npBadge(n.source)+'<span style="font-weight:600">'+esc(n.name)+'</span>';
-    if(n.reason) html+='<span style="color:var(--color-text-secondary)">'+esc(n.reason)+'</span>';
-    html+='<span style="color:var(--color-text-secondary);font-size:11px;margin-left:auto">'+esc(n.clinic)+'·'+esc(n.doctor)+' '+esc(n.time)+'</span></div>';
+    if(n.reason) html+='<span style="color:var(--text2)">'+esc(n.reason)+'</span>';
+    html+='<span style="color:var(--text2);font-size:11px;margin-left:auto">'+esc(n.clinic)+'·'+esc(n.doctor)+' '+esc(n.time)+'</span></div>';
   });
-  if(!np.length) html+='<div style="color:var(--color-text-secondary);font-size:12px;padding:8px 0">今日無新患者</div>';
+  if(!np.length) html+='<div style="color:var(--text2);font-size:12px;padding:8px 0">今日無新患者</div>';
   html+='</div>';
   return html;
 }
@@ -435,7 +508,7 @@ function renderFeeSection(data){
   fees.forEach(function(f){
     html+='<div class="fee-item"><div style="flex:1"><span style="font-weight:600">'+esc(f.patientName)+'</span>'+(f.isVP?'<span class="vp-tag">VP</span>':'')+' '+spTag(f.treatment)+'<div class="fee-meta">'+esc(f.clinic)+'·'+esc(f.doctor)+' '+esc(f.time)+'</div></div><div class="fee-amount">'+fmtAmt(f.amount)+'</div></div>';
   });
-  if(!fees.length) html+='<div style="color:var(--color-text-secondary);font-size:12px;padding:8px 0">今日無收費記錄</div>';
+  if(!fees.length) html+='<div style="color:var(--text2);font-size:12px;padding:8px 0">今日無收費記錄</div>';
   html+='<div class="fee-warn">⚠ 此金額約為實際收費的 70-100%，完整收費需對帳北極星系統</div></div>';
   return html;
 }
@@ -445,31 +518,21 @@ function renderRemindersSection(data){
   var html='<div class="card"><div class="section-title">提醒清單</div>';
   if(rm.pending.length){
     html+='<div style="margin-bottom:10px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">待確認</div>';
-    rm.pending.forEach(function(r){
-      html+='<div class="reminder-item"><span class="rm-badge rm-badge-pending">待確認</span><span style="font-weight:600">'+esc(r.patient)+'</span>';
-      if(r.reason) html+='<span style="color:var(--color-text-secondary)">'+esc(r.reason)+'</span>';
-      html+='<span style="color:var(--color-text-secondary);font-size:11px">'+esc(r.clinic)+'·'+esc(r.doctor)+' '+esc(r.time)+'</span><button class="rm-btn rm-btn-track">需追蹤</button></div>';
-    });
+    rm.pending.forEach(function(r){html+='<div class="reminder-item"><span class="rm-badge rm-badge-pending">待確認</span><span style="font-weight:600">'+esc(r.patient)+'</span>'+(r.reason?'<span style="color:var(--text2)">'+esc(r.reason)+'</span>':'')+'<span style="color:var(--text2);font-size:11px">'+esc(r.clinic)+'·'+esc(r.doctor)+' '+esc(r.time)+'</span><button class="rm-btn rm-btn-track">需追蹤</button></div>';});
     html+='</div>';
   }
   if(rm.cancelled.length){
     html+='<div style="margin-bottom:10px"><div style="font-size:12px;font-weight:700;margin-bottom:6px">已取消</div>';
-    rm.cancelled.forEach(function(r){
-      html+='<div class="reminder-item"><span class="rm-badge rm-badge-cancel">已取消</span><span style="font-weight:600">'+esc(r.patient)+'</span>';
-      if(r.reason) html+='<span style="color:var(--color-text-secondary)">'+esc(r.reason)+'</span>';
-      html+='<span style="color:var(--color-text-secondary);font-size:11px">'+esc(r.clinic)+'·'+esc(r.doctor)+' '+esc(r.time)+'</span><button class="rm-btn rm-btn-resched">需改約</button></div>';
-    });
+    rm.cancelled.forEach(function(r){html+='<div class="reminder-item"><span class="rm-badge rm-badge-cancel">已取消</span><span style="font-weight:600">'+esc(r.patient)+'</span>'+(r.reason?'<span style="color:var(--text2)">'+esc(r.reason)+'</span>':'')+'<span style="color:var(--text2);font-size:11px">'+esc(r.clinic)+'·'+esc(r.doctor)+' '+esc(r.time)+'</span><button class="rm-btn rm-btn-resched">需改約</button></div>';});
     html+='</div>';
   }
   if(rm.longNoVisit.length){
     html+='<div><div style="font-size:12px;font-weight:700;margin-bottom:6px">久未回診</div>';
-    rm.longNoVisit.forEach(function(r){
-      html+='<div class="reminder-item"><span class="rm-badge rm-badge-longno">久未回診</span><span style="font-weight:600">'+esc(r.patient)+'</span><span style="color:var(--color-text-secondary);font-size:11px">上次：'+esc(r.lastVisitDate)+' ('+r.daysSince+'天前)</span><span style="color:var(--color-text-secondary);font-size:11px">'+esc(r.clinic)+'·'+esc(r.doctor)+' '+esc(r.time)+'</span><button class="rm-btn rm-btn-return">回診機會</button></div>';
-    });
+    rm.longNoVisit.forEach(function(r){html+='<div class="reminder-item"><span class="rm-badge rm-badge-longno">久未回診</span><span style="font-weight:600">'+esc(r.patient)+'</span><span style="color:var(--text2);font-size:11px">上次：'+esc(r.lastVisitDate)+' ('+r.daysSince+'天前)</span><span style="color:var(--text2);font-size:11px">'+esc(r.clinic)+'·'+esc(r.doctor)+'</span><button class="rm-btn rm-btn-return">回診機會</button></div>';});
     html+='</div>';
   }
   if(!rm.pending.length&&!rm.cancelled.length&&!rm.longNoVisit.length){
-    html+='<div style="color:var(--color-text-secondary);font-size:12px;padding:6px 0">今日無提醒項目</div>';
+    html+='<div style="color:var(--text2);font-size:12px;padding:6px 0">今日無提醒項目</div>';
   }
   html+='</div>';
   return html;
@@ -480,11 +543,11 @@ function renderReschedulingSection(data){
   if(!rs.length) return '';
   var html='<div class="card"><div class="section-title">改約風險追蹤</div>';
   rs.forEach(function(r){
-    var badgeStyle=r.count>=2?'background:#FFEBEE;color:#B71C1C':'background:#FFF3E0;color:#E65100';
-    var badgeText=r.count>=2?'⚠ '+r.count+'次改約':'1次改約';
-    html+='<div class="resched-item"><span class="resched-badge" style="'+badgeStyle+'">'+badgeText+'</span><span style="font-weight:600;flex:1">'+esc(r.patient)+'</span><span style="color:var(--color-text-secondary);font-size:11px">'+esc(r.clinic)+'·'+esc(r.doctor)+' '+esc(r.time)+'</span></div>';
+    var bs=r.count>=2?'background:#FFEBEE;color:#B71C1C':'background:#FFF3E0;color:#E65100';
+    var bt=r.count>=2?'⚠ '+r.count+'次改約':'1次改約';
+    html+='<div class="resched-item"><span class="resched-badge" style="'+bs+'">'+bt+'</span><span style="font-weight:600;flex:1">'+esc(r.patient)+'</span><span style="color:var(--text2);font-size:11px">'+esc(r.clinic)+'·'+esc(r.doctor)+' '+esc(r.time)+'</span></div>';
   });
-  html+='<div style="font-size:11px;color:var(--color-text-secondary);margin-top:8px">⚠ 多次改約患者流失風險較高，建議主動聯繫確認</div></div>';
+  html+='<div style="font-size:11px;color:var(--text2);margin-top:8px">⚠ 多次改約患者流失風險較高，建議主動聯繫確認</div></div>';
   return html;
 }
 
@@ -495,9 +558,7 @@ function renderAlertsSection(data){
     html+='<div class="alert-none">✓ 今日運作正常，無異常警示</div>';
   } else {
     html+='<div class="alert-list">';
-    alerts.forEach(function(a){
-      html+='<div class="alert-item"><span class="alert-dot alert-dot-'+a.level+'"></span><span>'+esc(a.msg)+'</span></div>';
-    });
+    alerts.forEach(function(a){html+='<div class="alert-item"><span class="alert-dot alert-dot-'+a.level+'"></span><span>'+esc(a.msg)+'</span></div>';});
     html+='</div>';
   }
   html+='</div>';
@@ -512,113 +573,79 @@ function initPieChart(canvasId,pieData,legendId){
   if(!canvas||!pieData) return;
   var keys=Object.keys(pieData).filter(function(k){return pieData[k]>0;});
   var vals=keys.map(function(k){return pieData[k];});
-  var colors=keys.map(function(_,i){return (TS[keys[i]]||{bg:PIE_COLORS[i%PIE_COLORS.length]}).bg;});
-  // Use clinic-like colors for pie
   var pieColors=keys.map(function(_,i){return PIE_COLORS[i%PIE_COLORS.length];});
   state.charts[canvasId]=new Chart(canvas,{
     type:'doughnut',
-    data:{ labels:keys, datasets:[{ data:vals, backgroundColor:pieColors, borderWidth:1 }] },
-    options:{ cutout:'55%', plugins:{ legend:{display:false} }, responsive:true, maintainAspectRatio:true }
+    data:{labels:keys,datasets:[{data:vals,backgroundColor:pieColors,borderWidth:1}]},
+    options:{cutout:'55%',plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:true}
   });
   var leg=getEl(legendElId);
-  if(leg){
-    leg.innerHTML=keys.map(function(k,i){return '<div class="pie-legend-item"><span class="pie-dot" style="background:'+pieColors[i]+'"></span><span>'+esc(k)+'</span><span style="color:var(--color-text-secondary)"> '+pieData[k]+'</span></div>';}).join('');
-  }
+  if(leg) leg.innerHTML=keys.map(function(k,i){return '<div class="pie-legend-item"><span class="pie-dot" style="background:'+pieColors[i]+'"></span><span>'+esc(k)+'</span><span style="color:var(--text2)"> '+pieData[k]+'</span></div>';}).join('');
 }
 
-// ==================== DATE PICKER ====================
-function renderCalendar(ym,calData){
-  var p=ym.split('-'); var year=+p[0],month=+p[1];
-  var first=new Date(year,month-1,1); var last=new Date(year,month,0);
+// ==================== BOTTOM SHEET CALENDAR ====================
+function openCal(){
+  state.calYM=state.viewDate.slice(0,7);
+  renderCalSheet(state.calYM, state.calData);
+  loadCalGridData();
+  getEl('cal-overlay').classList.add('open');
+  getEl('cal-sheet').classList.add('open');
+}
+function closeCal(){
+  getEl('cal-overlay').classList.remove('open');
+  getEl('cal-sheet').classList.remove('open');
+}
+function changeCalMonth(dir){
+  var p=state.calYM.split('-');var y=+p[0],m=+p[1];
+  m+=dir;if(m<1){m=12;y--;}if(m>12){m=1;y++;}
+  state.calYM=y+'-'+pad2(m);
+  state.calData={};
+  renderCalSheet(state.calYM,{});
+  loadCalGridData();
+}
+function onCalDateClick(ds){
+  state.viewDate=ds;
+  state.todayData=null;
+  updateDateNavLabel();
+  closeCal();
+  if(state.currentTab==='today') loadToday();
+}
+function renderCalSheet(ym,calData){
+  var p=ym.split('-');var year=+p[0],month=+p[1];
+  var first=new Date(year,month-1,1);var last=new Date(year,month,0);
   var today=todayStr;
-  var html='<div class="card"><div class="cal-nav"><button class="cal-nav-btn" onclick="changeCalMonth(-1)">‹</button><span class="cal-month-label">'+year+'年'+month+'月</span><button class="cal-nav-btn" onclick="changeCalMonth(1)">›</button></div>';
+  var html='<div class="cal-nav"><button class="cal-nav-btn" onclick="changeCalMonth(-1)">‹</button><span class="cal-month-label">'+year+'年'+month+'月</span><button class="cal-nav-btn" onclick="changeCalMonth(1)">›</button></div>';
   html+='<div class="cal-header">';
   ['日','一','二','三','四','五','六'].forEach(function(d){html+='<div class="cal-day-label">'+d+'</div>';});
   html+='</div><div class="cal-grid">';
-  var startDow=first.getDay(); // 0=Sun
+  var startDow=first.getDay();
   for(var i=0;i<startDow;i++) html+='<div class="cal-cell other-month"></div>';
   for(var d=1;d<=last.getDate();d++){
     var ds=year+'-'+pad2(month)+'-'+pad2(d);
-    var dayDate=new Date(year,month-1,d);
-    var isFuture=ds>today, isToday=ds===today, isSel=ds===state.selDate;
+    var isFuture=ds>today,isToday=ds===today,isSel=ds===state.viewDate;
     var cls='cal-cell'+(isToday?' today-cell':'')+(isFuture?' future-cell':'')+(isSel?' selected':'');
     var info=calData[ds]||{total:0,dots:[]};
-    html+='<div class="'+cls+'" onclick="onDateClick(\''+ds+'\')">';
+    html+='<div class="'+cls+'" onclick="onCalDateClick(\''+ds+'\')">';
     html+='<div class="cal-date-num">'+d+'</div>';
     if(!isFuture){
-      if(info.dots.length){html+='<div class="cal-dots">'+info.dots.map(function(c){return'<span class="cal-dot" style="background:'+c+'"></span>';}).join('')+'</div>';}
+      if(info.dots.length) html+='<div class="cal-dots">'+info.dots.map(function(c){return'<span class="cal-dot" style="background:'+c+'"></span>';}).join('')+'</div>';
       if(info.total>0) html+='<div class="cal-count">'+info.total+'筆</div>';
     }
     html+='</div>';
   }
-  var total=startDow+last.getDate();
-  var rem=total%7?7-total%7:0;
+  var total=startDow+last.getDate();var rem=total%7?7-total%7:0;
   for(var j=0;j<rem;j++) html+='<div class="cal-cell other-month"></div>';
-  html+='</div></div>';
-  getEl('cal-wrap').innerHTML=html;
-}
-
-function changeCalMonth(dir){
-  var p=state.calYM.split('-'); var y=+p[0],m=+p[1];
-  m+=dir; if(m<1){m=12;y--;} if(m>12){m=1;y++;}
-  state.calYM=y+'-'+pad2(m);
-  state.calData={};
-  renderCalendar(state.calYM,{});
-  if(typeof google!=='undefined'&&google.script){
-    google.script.run.withSuccessHandler(function(json){state.calData=JSON.parse(json);renderCalendar(state.calYM,state.calData);}).getCalendarGridDataForClient(state.calYM);
-  }
-}
-
-function onDateClick(ds){
-  state.selDate=ds;
-  renderCalendar(state.calYM,state.calData);
-  getEl('day-detail').innerHTML='<div class="loading">載入 '+ds+' 資料中…</div>';
-  loadDateData(ds);
-}
-
-function renderDayDetail(data){
-  var d=data.date||''; var k=data.kpi||{}; var ky=data.kpiYesterday||{};
-  var html='<div style="padding:4px 0 8px"><div style="font-size:15px;font-weight:700;margin-bottom:4px">'+esc(d)+' ('+dayName(d)+')</div>';
-  var diff=k.totalAppointments-(ky.totalAppointments||0);
-  if(diff>0) html+='<span style="font-size:11px;color:#1D9E75;font-weight:600">↑ 較前日 +'+diff+'</span>';
-  else if(diff<0) html+='<span style="font-size:11px;color:#E24B4A;font-weight:600">↓ 較前日 '+diff+'</span>';
   html+='</div>';
-  html+=renderKPISection(data);
-  html+=renderClinicBarsSection(data);
-  // 療程標籤
-  var pie=data.treatmentPie||{};
-  var tags=Object.keys(pie).filter(function(k){return pie[k]>0;});
-  if(tags.length){
-    html+='<div class="card"><div class="section-title">療程分布</div><div class="specialty-tags">'+tags.map(function(t){return spTag(t)+' <span style="font-size:10px;color:var(--color-text-secondary)">×'+pie[t]+'</span>';}).join('')+'</div></div>';
-  }
-  // 高單價前5
-  var fees=(data.feeList||[]).slice(0,5);
-  if(fees.length){
-    html+='<div class="card"><div class="section-title">高單價前5筆</div>';
-    fees.forEach(function(f){html+='<div class="fee-item"><div style="flex:1"><span style="font-weight:600">'+esc(f.patientName)+'</span> '+spTag(f.treatment)+'<div class="fee-meta">'+esc(f.clinic)+'·'+esc(f.doctor)+'</div></div><div class="fee-amount">'+fmtAmt(f.amount)+'</div></div>';});
-    html+='</div>';
-  }
-  // NP
-  var np=data.npList||[];
-  if(np.length){
-    html+='<div class="card"><div class="section-title">新患者名單</div>';
-    np.forEach(function(n){html+='<div class="np-item">'+npBadge(n.source)+'<span style="font-weight:600">'+esc(n.name)+'</span><span style="color:var(--color-text-secondary);font-size:11px;margin-left:auto">'+esc(n.clinic)+'·'+esc(n.doctor)+'</span></div>';});
-    html+='</div>';
-  }
-  getEl('day-detail').innerHTML=html;
+  getEl('cal-sheet-inner').innerHTML=html;
 }
 
 // ==================== WEEKLY ====================
 function renderWeekly(data){
   var html='';
-  // Nav
   html+='<div class="week-nav"><button class="week-nav-btn" onclick="changeWeek(-1)">‹ 上週</button><span class="week-range-label">'+esc(data.weekStart)+' — '+esc(data.weekEnd)+'</span><button class="week-nav-btn" onclick="changeWeek(1)">下週 ›</button></div>';
-
-  // KPI
   var k=data.kpi||{};
-  var confirmedDay=data.days?data.days.filter(function(d){return d.isPast;}).length:0;
   html+='<div class="kpi-grid">';
-  html+=kpiCard('本週已知收費',fmtAmt(k.confirmedAmount),'<div class="kpi-note">週一至'+(['日','一','二','三','四','五','六'][new Date(todayStr.replace(/-/g,'/')).getDay()])+'確認</div>');
+  html+=kpiCard('本週已確認收費',fmtAmt(k.confirmedAmount),'<div class="kpi-note">截至今日已確認</div>');
   html+=kpiCard('本週預估總收費',fmtAmt(k.estimatedAmount),'<div class="kpi-note" style="color:#BA7517">含未來天預估</div>');
   html+=kpiCard('本週有效約診',k.totalAppointments,null);
   html+=kpiCard('本週新患者',k.npCount,null);
@@ -627,30 +654,35 @@ function renderWeekly(data){
   // Daily bars
   html+='<div class="card"><div class="section-title">每日收費進度</div>';
   var maxAmt=data.days?Math.max.apply(null,data.days.map(function(d){return d.amount||0;})):1;
-  var totalEst=k.estimatedAmount||1;
   var dnames=['一','二','三','四','五','六'];
   (data.days||[]).forEach(function(d,i){
     var pct=maxAmt>0?Math.round((d.amount||0)/maxAmt*100):0;
     var barColor=d.isToday?'#378ADD':d.isPast?'#1D9E75':'rgba(29,158,117,0.35)';
     var amtStyle=d.isPast?'color:#1D9E75':'color:#BA7517;font-style:italic';
-    html+='<div class="week-bar-item"><span class="week-bar-day">'+dnames[i]+'</span><div class="week-bar-track"><div class="week-bar-fill" style="width:'+pct+'%;background:'+barColor+'">'+(pct>15?fmtAmt(d.amount):'')+'</div></div><span class="week-bar-amt" style="'+amtStyle+'">'+(pct<=15?fmtAmt(d.amount):'')+(d.isPast?'':' 預估')+'</span></div>';
+    html+='<div class="week-bar-item"><span class="week-bar-day">'+dnames[i]+'</span><div class="week-bar-track"><div class="week-bar-fill" style="width:'+pct+'%;background:'+barColor+'">'+(pct>18?fmtAmt(d.amount):'')+'</div></div><span class="week-bar-amt" style="'+amtStyle+'">'+(pct<=18?fmtAmt(d.amount):'')+(d.isPast?'':' 預估')+'</span></div>';
   });
-  // Totals
-  html+='<div style="border-top:0.5px solid var(--color-border-tertiary);margin-top:8px;padding-top:8px">';
+  html+='<div style="border-top:0.5px solid var(--border);margin-top:8px;padding-top:8px">';
   html+='<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:#1D9E75">已確認合計</span><span style="color:#1D9E75;font-weight:700">'+fmtAmt(k.confirmedAmount)+'</span></div>';
   html+='<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:#BA7517;font-style:italic">預估合計</span><span style="color:#BA7517;font-style:italic;font-weight:700">'+fmtAmt(k.estimatedAmount-k.confirmedAmount)+'</span></div>';
   html+='<div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;font-weight:700"><span>總預估合計</span><span>'+fmtAmt(k.estimatedAmount)+'</span></div>';
   var goalPct=Math.min(100,Math.round((k.estimatedAmount/WEEK_TARGET)*100));
-  html+='<div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px">週目標 '+fmtAmt(WEEK_TARGET)+' · '+goalPct+'%</div>';
+  html+='<div style="font-size:11px;color:var(--text2);margin-bottom:4px">週目標 '+fmtAmt(WEEK_TARGET)+' · '+goalPct+'%</div>';
   html+='<div class="progress-track"><div class="progress-fill" style="width:'+goalPct+'%"></div></div>';
   html+='</div></div>';
 
-  // Doctor performance
-  html+='<div class="card"><div class="section-title">醫師自費業績（本週）</div>';
+  // Doctor list (compact rows)
+  html+='<div class="card"><div class="section-title">醫師業績（本週）</div>';
   (data.doctorPerfList||[]).forEach(function(doc){
-    var avg=doc.sessions>0?Math.round(doc.amount/doc.sessions):0;
-    html+='<div class="doctor-perf-card"><div class="doctor-perf-header"><span class="clinic-dot-sm" style="background:'+doc.color+'"></span><span class="doctor-perf-name">'+esc(doc.name)+'</span><span style="font-size:11px;color:var(--color-text-secondary)">'+esc(doc.clinic)+'</span></div>';
-    html+='<div class="doctor-perf-stats"><div class="stat-mini"><div class="stat-mini-val">'+fmtAmt(doc.amount)+'</div><div class="stat-mini-label">週業績</div></div><div class="stat-mini"><div class="stat-mini-val">'+doc.sessions+'</div><div class="stat-mini-label">看診數</div></div><div class="stat-mini"><div class="stat-mini-val">'+fmtAmt(avg)+'</div><div class="stat-mini-label">均/診</div></div></div></div>';
+    var sc=doc.shiftCount||doc.sessions||1;
+    var avg=sc>0?Math.round(doc.amount/sc):0;
+    html+='<div class="week-doc-row">';
+    html+='<span class="wdr-dot" style="background:'+doc.color+'"></span>';
+    html+='<span class="wdr-name">'+esc(doc.name)+'</span>';
+    html+='<span class="wdr-clinic">'+esc(doc.clinic)+'</span>';
+    html+='<span class="wdr-stats">'+sc+'診·'+doc.sessions+'人次</span>';
+    html+='<span class="wdr-amt">'+fmtAmt(doc.amount)+'</span>';
+    html+='<span class="wdr-avg">均'+fmtAmt(avg)+'</span>';
+    html+='</div>';
   });
   html+='</div>';
 
@@ -659,26 +691,23 @@ function renderWeekly(data){
   var maxClinic=data.clinicCompList?Math.max.apply(null,data.clinicCompList.map(function(c){return c.total;})):1;
   (data.clinicCompList||[]).forEach(function(c){
     var pct=maxClinic>0?Math.round(c.total/maxClinic*100):0;
-    html+='<div class="clinic-bar-item"><span class="clinic-bar-label">'+esc(c.name)+'</span><div class="clinic-bar-track"><div class="clinic-bar-fill" style="width:'+pct+'%;background:'+c.color+'"></div></div><span class="clinic-bar-count">'+c.total+'</span><span style="font-size:11px;color:var(--color-text-secondary)">'+fmtAmt(c.amount)+'</span></div>';
+    html+='<div class="clinic-bar-item"><span class="clinic-bar-label">'+esc(c.name)+'</span><div class="clinic-bar-track"><div class="clinic-bar-fill" style="width:'+pct+'%;background:'+c.color+'"></div></div><span class="clinic-bar-count">'+c.total+'</span><span style="font-size:11px;color:var(--text2)">'+fmtAmt(c.amount)+'</span></div>';
   });
   html+='</div>';
 
-  // NP analysis
   html+=renderWeekNP(data);
 
-  // High fee by day
+  // High fee
   html+='<div class="card"><div class="section-title">本週高單價療程</div>';
   var feesByDate={};
   (data.highFeeList||[]).forEach(function(f){if(!feesByDate[f.date])feesByDate[f.date]=[];feesByDate[f.date].push(f);});
   Object.keys(feesByDate).sort().forEach(function(ds){
-    html+='<div style="font-size:12px;font-weight:700;margin:8px 0 4px">'+esc(ds)+'</div>';
+    html+='<div style="font-size:11px;font-weight:700;margin:8px 0 4px;color:var(--text2)">'+esc(ds)+'</div>';
     feesByDate[ds].forEach(function(f){
       var style=f.isPast?'':'color:#BA7517;font-style:italic';
       html+='<div class="fee-item"><div style="flex:1;'+style+'"><span style="font-weight:600">'+esc(f.patientName)+'</span> '+spTag(f.treatment)+'</div><div class="fee-amount" style="'+style+'">'+fmtAmt(f.amount)+(f.isPast?'':' 預定')+'</div></div>';
     });
   });
-  var bigFees=(data.highFeeList||[]).filter(function(f){return f.amount>30000&&!(f.desc||'').match(/已付清|已收|付清/);});
-  if(bigFees.length) html+='<div class="fee-warn">⚠ 大額未確認：'+bigFees.map(function(f){return esc(f.patientName)+' '+fmtAmt(f.amount);}).join('、')+'</div>';
   html+='</div>';
 
   getEl('panel-weekly').innerHTML=html;
@@ -694,26 +723,24 @@ function renderWeekNP(data){
   });
   html+='</div>';
   np.slice(0,8).forEach(function(n){
-    html+='<div class="np-item">'+npBadge(n.source)+'<span style="font-weight:600">'+esc(n.name)+'</span><span style="color:var(--color-text-secondary);font-size:11px">'+esc(n.date)+'</span><span style="color:var(--color-text-secondary);font-size:11px;margin-left:auto">'+esc(n.clinic)+'·'+esc(n.doctor)+'</span></div>';
+    html+='<div class="np-item">'+npBadge(n.source)+'<span style="font-weight:600">'+esc(n.name)+'</span><span style="color:var(--text2);font-size:11px">'+esc(n.date)+'</span><span style="color:var(--text2);font-size:11px;margin-left:auto">'+esc(n.clinic)+'·'+esc(n.doctor)+'</span></div>';
   });
   html+='</div>';
   return html;
 }
 
 function changeWeek(dir){
-  var d=new Date(state.weekDate.replace(/-/g,'/')); d.setDate(d.getDate()+dir*7);
+  var d=new Date(state.weekDate.replace(/-/g,'/'));d.setDate(d.getDate()+dir*7);
   state.weekDate=d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
-  state.weekData=null; loadWeekly();
+  state.weekData=null;loadWeekly();
 }
 
 // ==================== MONTHLY ====================
 function renderMonthly(data){
   var html='';
-  // Month nav
-  var p=data.yearMonth.split('-'); var y=+p[0],m=+p[1];
+  var p=data.yearMonth.split('-');var y=+p[0],m=+p[1];
   html+='<div class="week-nav"><button class="week-nav-btn" onclick="changeMonth(-1)">‹ 上月</button><span class="week-range-label">'+y+'年'+m+'月</span><button class="week-nav-btn" onclick="changeMonth(1)">下月 ›</button></div>';
 
-  // KPI with trends
   var k=data.kpi||{},kp=data.kpiPrev||{};
   html+='<div class="kpi-grid">';
   html+=kpiCard('本月總約診',k.totalAppointments,trendBadge(k.totalAppointments,kp.totalAppointments));
@@ -722,10 +749,8 @@ function renderMonthly(data){
   html+=kpiCard('日均約診',k.avgDaily,null);
   html+='</div>';
 
-  // Trend line chart
-  html+='<div class="card"><div class="section-title">每日趨勢</div><canvas id="monthly-trend-chart" style="max-height:200px"></canvas><div id="monthly-trend-legend" class="pie-legend" style="margin-top:8px"></div></div>';
+  html+='<div class="card"><div class="section-title">每日趨勢</div><canvas id="monthly-trend-chart" style="max-height:180px"></canvas><div id="monthly-trend-legend" class="pie-legend" style="margin-top:8px"></div></div>';
 
-  // Clinic monthly + treatment pie
   html+='<div class="two-col">';
   html+='<div class="card"><div class="section-title">診所月總量</div>';
   var maxClinic=data.clinicMonthlyList?Math.max.apply(null,data.clinicMonthlyList.map(function(c){return c.total;})):1;
@@ -734,51 +759,46 @@ function renderMonthly(data){
     html+='<div class="clinic-bar-item"><span class="clinic-bar-label">'+esc(c.name)+'</span><div class="clinic-bar-track"><div class="clinic-bar-fill" style="width:'+pct+'%;background:'+c.color+'"></div></div><span class="clinic-bar-count">'+c.total+'</span></div>';
   });
   html+='</div>';
-  html+='<div class="card"><div class="section-title">月療程分布</div><canvas id="pie-chart-monthly" style="max-height:160px"></canvas><div class="pie-legend" id="pie-legend-monthly"></div></div>';
+  html+='<div class="card"><div class="section-title">月療程分布</div><canvas id="pie-chart-monthly" style="max-height:150px"></canvas><div class="pie-legend" id="pie-legend-monthly"></div></div>';
   html+='</div>';
 
-  // Doctor ranking
   html+='<div class="card"><div class="section-title">醫師自費業績月排行</div>';
   (data.doctorMonthlyList||[]).forEach(function(doc,i){
-    var avg=doc.sessions>0?Math.round(doc.amount/doc.sessions):0;
-    html+='<div class="month-doctor-row"><span class="rank-num">'+(i+1)+'</span><div style="flex:1"><span class="month-doctor-name">'+esc(doc.name)+'</span> <span class="sptag" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">'+esc(doc.clinic)+'</span><div class="month-doctor-meta">'+doc.sessions+' 診 · 均 '+fmtAmt(avg)+'/診</div></div><span class="month-doctor-amt">'+fmtAmt(doc.amount)+'</span></div>';
+    var sc=doc.shiftCount||doc.sessions||1;
+    var avg=sc>0?Math.round(doc.amount/sc):0;
+    html+='<div class="month-doctor-row"><span class="rank-num">'+(i+1)+'</span><div style="flex:1"><span class="month-doctor-name">'+esc(doc.name)+'</span> <span class="sptag" style="background:var(--bg2);color:var(--text2)">'+esc(doc.clinic)+'</span><div class="month-doctor-meta">'+sc+' 診 · '+doc.sessions+' 人次 · 均 '+fmtAmt(avg)+'/診</div></div><span class="month-doctor-amt">'+fmtAmt(doc.amount)+'</span></div>';
   });
   html+='</div>';
 
-  // High fee top 10
   html+='<div class="card"><div class="section-title">月高單價 Top 10</div>';
   (data.highFeeList||[]).forEach(function(f){
     var isFuture=f.date>todayStr;
     var style=isFuture?'color:#BA7517;font-style:italic':'';
-    html+='<div class="month-fee-item"><div style="flex:1;'+style+'"><span style="font-weight:600">'+esc(f.patientName)+'</span> '+spTag(f.treatment)+'<div style="font-size:11px;color:var(--color-text-secondary)">'+esc(f.clinic)+'·'+esc(f.doctor)+' '+esc(f.date)+'</div></div><div class="fee-amount" style="'+style+'">'+fmtAmt(f.amount)+(isFuture?' 預定':'')+'</div></div>';
+    html+='<div class="month-fee-item"><div style="flex:1;'+style+'"><span style="font-weight:600">'+esc(f.patientName)+'</span> '+spTag(f.treatment)+'<div style="font-size:11px;color:var(--text2)">'+esc(f.clinic)+'·'+esc(f.doctor)+' '+esc(f.date)+'</div></div><div class="fee-amount" style="'+style+'">'+fmtAmt(f.amount)+(isFuture?' 預定':'')+'</div></div>';
   });
   html+='</div>';
 
-  // NP monthly
   html+=renderMonthNP(data);
 
   getEl('panel-monthly').innerHTML=html;
-
-  // Init charts
   initPieChart('pie-chart-monthly',data.treatmentPie,'pie-legend-monthly');
   initTrendChart(data);
 }
 
 function renderMonthNP(data){
-  var np=data.npList||[]; var src=data.npSource||{'波音轉介':0,'外部全新':0,'體系OP':0};
+  var np=data.npList||[];var src=data.npSource||{'波音轉介':0,'外部全新':0,'體系OP':0};
   var html='<div class="card"><div class="section-title">月NP來源分析</div>';
   html+='<div class="np-source-grid">';
   ['波音轉介','外部全新','體系OP'].forEach(function(k){
     html+='<div class="np-source-card"><div class="np-source-num" style="color:'+(k==='波音轉介'?'#D85A30':k==='體系OP'?'#1D9E75':'#378ADD')+'">'+(src[k]||0)+'</div><div class="np-source-label">'+esc(k)+'</div></div>';
   });
   html+='</div>';
-  // Group by clinic
   var byClinic={};
   np.forEach(function(n){if(!byClinic[n.clinic])byClinic[n.clinic]=[];byClinic[n.clinic].push(n);});
   Object.keys(byClinic).forEach(function(clinic){
     html+='<div style="font-size:12px;font-weight:700;margin:8px 0 4px;color:'+esc(CC[clinic]||'#666')+'">'+esc(clinic)+'</div>';
     byClinic[clinic].forEach(function(n){
-      html+='<div class="np-item">'+npBadge(n.source)+'<span style="font-weight:600">'+esc(n.name)+'</span><span style="font-size:11px;color:var(--color-text-secondary)">'+esc(n.date)+'</span><span style="font-size:11px;color:var(--color-text-secondary);margin-left:auto">'+esc(n.doctor)+'</span></div>';
+      html+='<div class="np-item">'+npBadge(n.source)+'<span style="font-weight:600">'+esc(n.name)+'</span><span style="font-size:11px;color:var(--text2)">'+esc(n.date)+'</span><span style="font-size:11px;color:var(--text2);margin-left:auto">'+esc(n.doctor)+'</span></div>';
     });
   });
   html+='</div>';
@@ -792,28 +812,27 @@ function initTrendChart(data){
   var labels=(data.days||[]).map(function(d){return d.date.slice(8);});
   var clinicNames=Object.keys(data.clinicTrend||{});
   var datasets=clinicNames.map(function(name){
-    return { label:name, data:data.clinicTrend[name]||[], borderColor:CC[name]||'#888', backgroundColor:'transparent', tension:.3, pointRadius:2 };
+    return{label:name,data:data.clinicTrend[name]||[],borderColor:CC[name]||'#888',backgroundColor:'transparent',tension:.3,pointRadius:2};
   });
   state.charts['monthly-trend-chart']=new Chart(canvas,{
     type:'line',
-    data:{ labels:labels, datasets:datasets },
-    options:{ plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false},ticks:{maxTicksLimit:10}}}, responsive:true, maintainAspectRatio:true }
+    data:{labels:labels,datasets:datasets},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false},ticks:{maxTicksLimit:10}}},responsive:true,maintainAspectRatio:true}
   });
   var leg=getEl('monthly-trend-legend');
-  if(leg){
-    leg.innerHTML=clinicNames.map(function(n){return '<div class="pie-legend-item"><span class="pie-dot" style="background:'+CC[n]+'"></span>'+esc(n)+'</div>';}).join('');
-  }
+  if(leg) leg.innerHTML=clinicNames.map(function(n){return '<div class="pie-legend-item"><span class="pie-dot" style="background:'+CC[n]+'"></span>'+esc(n)+'</div>';}).join('');
 }
 
 function changeMonth(dir){
-  var p=state.monthYM.split('-'); var y=+p[0],m=+p[1];
-  m+=dir; if(m<1){m=12;y--;} if(m>12){m=1;y++;}
+  var p=state.monthYM.split('-');var y=+p[0],m=+p[1];
+  m+=dir;if(m<1){m=12;y--;}if(m>12){m=1;y++;}
   state.monthYM=y+'-'+pad2(m);
-  state.monthData=null; loadMonthly();
+  state.monthData=null;loadMonthly();
 }
 
 // ==================== INIT ====================
 window.addEventListener('DOMContentLoaded',function(){
+  updateDateNavLabel();
   loadToday();
 });
 </script>
