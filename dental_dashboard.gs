@@ -409,7 +409,7 @@ function getWeekData(dateStr) {
   var monday=new Date(date.getTime()-(dow===0?6:dow-1)*864e5);
   monday=new Date(monday.getFullYear(),monday.getMonth(),monday.getDate());
   var days=[];
-  for (var i=0;i<6;i++) { var d=new Date(monday.getTime()+i*864e5); days.push(formatDate(d)); }
+  for (var i=0;i<7;i++) { var d=new Date(monday.getTime()+i*864e5); days.push(formatDate(d)); }
   var now=new Date();
   var out={ weekStart:days[0], weekEnd:days[5], days:[], kpi:{ confirmedAmount:0, estimatedAmount:0, totalAppointments:0, npCount:0 }, doctorPerf:{}, clinicComp:{}, npList:[], npSource:{'波音轉介':0,'外部全新':0,'體系OP':0}, highFeeList:[] };
 

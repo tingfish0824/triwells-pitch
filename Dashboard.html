@@ -654,7 +654,7 @@ function renderWeekly(data){
   // Daily bars
   html+='<div class="card"><div class="section-title">每日收費進度</div>';
   var maxAmt=data.days?Math.max.apply(null,data.days.map(function(d){return d.amount||0;})):1;
-  var dnames=['一','二','三','四','五','六'];
+  var dnames=['一','二','三','四','五','六','日'];
   (data.days||[]).forEach(function(d,i){
     var pct=maxAmt>0?Math.round((d.amount||0)/maxAmt*100):0;
     var barColor=d.isToday?'#378ADD':d.isPast?'#1D9E75':'rgba(29,158,117,0.35)';
