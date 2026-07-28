@@ -239,89 +239,94 @@ function getDayData(dateStr) {
   };
 
   CLINIC_NAMES.forEach(function(clinicName){
-    var events=fetchClinicEvents(clinicName,date);
-    var lwsdEvents=fetchClinicEvents(clinicName,lwsd);
-    var color=CLINIC_COLORS[clinicName];
-    var doctorMap={};
+    try {
+      var events=fetchClinicEvents(clinicName,date);
+      var lwsdEvents=fetchClinicEvents(clinicName,lwsd);
+      var color=CLINIC_COLORS[clinicName];
+      var doctorMap={};
 
-    events.forEach(function(ev){
-      var valid=isValidAppointment(ev.title,ev.desc,ev.start);
-      var dr=extractDoctorName(ev.title,ev.desc)||'值班醫師';
-      if (!doctorMap[dr]) doctorMap[dr]={ name:dr, clinic:clinicName, color:color, all:[], valid:[], amount:0, hourly:{}, shiftSet:{} };
-      doctorMap[dr].all.push(ev);
-      if (!valid) return;
+      events.forEach(function(ev){
+        var valid=isValidAppointment(ev.title,ev.desc,ev.start);
+        var dr=extractDoctorName(ev.title,ev.desc)||'值班醫師';
+        if (!doctorMap[dr]) doctorMap[dr]={ name:dr, clinic:clinicName, color:color, all:[], valid:[], amount:0, hourly:{}, shiftSet:{} };
+        doctorMap[dr].all.push(ev);
+        if (!valid) return;
 
-      var h; try { h=parseInt(Utilities.formatDate(ev.start,'Asia/Taipei','H'),10); } catch(e2){ h=ev.start.getHours(); }
-      var shift=getShift(h);
-      var timeStr=pad2(h)+':'+pad2(ev.start.getMinutes());
-      var amt=parseAmount(ev.desc);
-      var npFlag=isNP(ev.title,ev.desc);
-      var patName=parsePatientName(ev.desc)||ev.title;
-      var treatment=parseTreatmentType(ev.title,ev.desc);
-      var desc=ev.desc||'';
+        var h; try { h=parseInt(Utilities.formatDate(ev.start,'Asia/Taipei','H'),10); } catch(e2){ h=ev.start.getHours(); }
+        var shift=getShift(h);
+        var timeStr=pad2(h)+':'+pad2(ev.start.getMinutes());
+        var amt=parseAmount(ev.desc);
+        var npFlag=isNP(ev.title,ev.desc);
+        var patName=parsePatientName(ev.desc)||ev.title;
+        var treatment=parseTreatmentType(ev.title,ev.desc);
+        var desc=ev.desc||'';
 
-      doctorMap[dr].valid.push(ev);
-      doctorMap[dr].amount+=amt;
-      doctorMap[dr].hourly[h]=(doctorMap[dr].hourly[h]||0)+1;
-      if(shift) doctorMap[dr].shiftSet[shift]=true;
+        doctorMap[dr].valid.push(ev);
+        doctorMap[dr].amount+=amt;
+        doctorMap[dr].hourly[h]=(doctorMap[dr].hourly[h]||0)+1;
+        if(shift) doctorMap[dr].shiftSet[shift]=true;
 
-      out.treatmentPie[treatment]=(out.treatmentPie[treatment]||0)+1;
+        out.treatmentPie[treatment]=(out.treatmentPie[treatment]||0)+1;
 
-      if (npFlag) {
-        out.npList.push({ name:patName, source:getNPSource(desc), reason:extractReason(desc), clinic:clinicName, doctor:dr, time:timeStr, desc:desc });
-      }
-      if (amt>0) {
-        out.feeList.push({ patientName:patName, amount:amt, clinic:clinicName, doctor:dr, time:timeStr, treatment:treatment, isVP:desc.indexOf('VP')>=0, desc:desc });
-      }
+        if (npFlag) {
+          out.npList.push({ name:patName, source:getNPSource(desc), reason:extractReason(desc), clinic:clinicName, doctor:dr, time:timeStr, desc:desc });
+        }
+        if (amt>0) {
+          out.feeList.push({ patientName:patName, amount:amt, clinic:clinicName, doctor:dr, time:timeStr, treatment:treatment, isVP:desc.indexOf('VP')>=0, desc:desc });
+        }
 
-      // 提醒
-      var pendingKeys=['時間尚未確定','時間確認中','賴改約','未接','已傳簡訊'];
-      var cancelKeys=['患者取消','診所改約'];
-      if (pendingKeys.some(function(k){return desc.indexOf(k)>=0;}) && (ev.start<now||h<9)) {
-        out.reminders.pending.push({ patient:patName, reason:extractReason(desc), clinic:clinicName, doctor:dr, time:timeStr });
-      }
-      if (cancelKeys.some(function(k){return desc.indexOf(k)>=0;})) {
-        out.reminders.cancelled.push({ patient:patName, reason:extractReason(desc), clinic:clinicName, doctor:dr, time:timeStr });
-      }
-      var lvDate=parseLastVisitDate(desc);
-      if (lvDate && daysBetween(new Date(lvDate),now)>300) {
-        out.reminders.longNoVisit.push({ patient:patName, lastVisitDate:lvDate, daysSince:daysBetween(new Date(lvDate),now), clinic:clinicName, doctor:dr, time:timeStr });
-      }
+        // 提醒
+        var pendingKeys=['時間尚未確定','時間確認中','賴改約','未接','已傳簡訊'];
+        var cancelKeys=['患者取消','診所改約'];
+        if (pendingKeys.some(function(k){return desc.indexOf(k)>=0;}) && (ev.start<now||h<9)) {
+          out.reminders.pending.push({ patient:patName, reason:extractReason(desc), clinic:clinicName, doctor:dr, time:timeStr });
+        }
+        if (cancelKeys.some(function(k){return desc.indexOf(k)>=0;})) {
+          out.reminders.cancelled.push({ patient:patName, reason:extractReason(desc), clinic:clinicName, doctor:dr, time:timeStr });
+        }
+        var lvDate=parseLastVisitDate(desc);
+        if (lvDate && daysBetween(new Date(lvDate),now)>300) {
+          out.reminders.longNoVisit.push({ patient:patName, lastVisitDate:lvDate, daysSince:daysBetween(new Date(lvDate),now), clinic:clinicName, doctor:dr, time:timeStr });
+        }
 
-      // 改約
-      var reschedKeys=['改約','改1','改2','改3','未接'];
-      if (reschedKeys.some(function(k){return desc.indexOf(k)>=0;})) {
-        var cnt=0;
-        var mm=desc.match(/改(\d)/g);
-        if (mm) mm.forEach(function(x){cnt=Math.max(cnt,+x[1]);});
-        if (cnt===0) cnt=1;
-        out.rescheduling.push({ patient:patName, count:cnt, clinic:clinicName, doctor:dr, time:timeStr });
-      }
-    });
+        // 改約
+        var reschedKeys=['改約','改1','改2','改3','未接'];
+        if (reschedKeys.some(function(k){return desc.indexOf(k)>=0;})) {
+          var cnt=0;
+          var mm=desc.match(/改(\d)/g);
+          if (mm) mm.forEach(function(x){cnt=Math.max(cnt,+x[1]);});
+          if (cnt===0) cnt=1;
+          out.rescheduling.push({ patient:patName, count:cnt, clinic:clinicName, doctor:dr, time:timeStr });
+        }
+      });
 
-    var lwsdCount=lwsdEvents.filter(function(ev){return isValidAppointment(ev.title,ev.desc,ev.start);}).length;
-    var workingDocs=[];
+      var lwsdCount=lwsdEvents.filter(function(ev){return isValidAppointment(ev.title,ev.desc,ev.start);}).length;
+      var workingDocs=[];
 
-    Object.keys(doctorMap).forEach(function(dName){
-      var doc=doctorMap[dName];
-      if (doc.valid.length===0) return;
-      var seen={}, specialties=[];
-      doc.valid.forEach(function(ev){ var t=parseTreatmentType(ev.title,ev.desc); if(t!=='其他'&&!seen[t]){seen[t]=true;specialties.push(t);} });
-      var sc=Object.keys(doc.shiftSet).length||1;
-      workingDocs.push({ name:dName, clinic:clinicName, color:color, sessions:doc.valid.length, amount:doc.amount, specialties:specialties, hourly:doc.hourly, shiftCount:sc });
-      out.doctorRanking.push({ name:dName, clinic:clinicName, color:color, sessions:doc.valid.length, amount:doc.amount, shiftCount:sc });
-      out.heatmapData.push({ clinic:clinicName, doctor:dName, color:color, hourly:doc.hourly });
-      out.kpi.workingDoctors++;
-    });
+      Object.keys(doctorMap).forEach(function(dName){
+        var doc=doctorMap[dName];
+        if (doc.valid.length===0) return;
+        var seen={}, specialties=[];
+        doc.valid.forEach(function(ev){ var t=parseTreatmentType(ev.title,ev.desc); if(t!=='其他'&&!seen[t]){seen[t]=true;specialties.push(t);} });
+        var sc=Object.keys(doc.shiftSet).length||1;
+        workingDocs.push({ name:dName, clinic:clinicName, color:color, sessions:doc.valid.length, amount:doc.amount, specialties:specialties, hourly:doc.hourly, shiftCount:sc });
+        out.doctorRanking.push({ name:dName, clinic:clinicName, color:color, sessions:doc.valid.length, amount:doc.amount, shiftCount:sc });
+        out.heatmapData.push({ clinic:clinicName, doctor:dName, color:color, hourly:doc.hourly });
+        out.kpi.workingDoctors++;
+      });
 
-    var clinicTotal=workingDocs.reduce(function(s,d){return s+d.sessions;},0);
-    var clinicAmount=workingDocs.reduce(function(s,d){return s+d.amount;},0);
-    var clinicNP=out.npList.filter(function(n){return n.clinic===clinicName;}).length;
+      var clinicTotal=workingDocs.reduce(function(s,d){return s+d.sessions;},0);
+      var clinicAmount=workingDocs.reduce(function(s,d){return s+d.amount;},0);
+      var clinicNP=out.npList.filter(function(n){return n.clinic===clinicName;}).length;
 
-    out.clinics.push({ name:clinicName, color:color, totalAppointments:clinicTotal, totalAmount:clinicAmount, npCount:clinicNP, lastWeekSameDay:lwsdCount, doctors:workingDocs });
-    out.kpi.totalAppointments+=clinicTotal;
-    out.kpi.totalAmount+=clinicAmount;
-    out.kpi.npCount+=clinicNP;
+      out.clinics.push({ name:clinicName, color:color, totalAppointments:clinicTotal, totalAmount:clinicAmount, npCount:clinicNP, lastWeekSameDay:lwsdCount, doctors:workingDocs });
+      out.kpi.totalAppointments+=clinicTotal;
+      out.kpi.totalAmount+=clinicAmount;
+      out.kpi.npCount+=clinicNP;
+    } catch(clinicErr) {
+      console.log('[Clinic error] ' + clinicName + ': ' + clinicErr.message);
+      out.clinics.push({ name:clinicName, color:CLINIC_COLORS[clinicName], totalAppointments:0, totalAmount:0, npCount:0, lastWeekSameDay:0, doctors:[] });
+    }
   });
 
   out.feeList.sort(function(a,b){return b.amount-a.amount;});
@@ -512,8 +517,19 @@ function getWeekDataForClient(dateStr) {
   catch(e) { return JSON.stringify({error:e.message}); }
 }
 function getMonthDataForClient(yearMonth) {
-  try { return JSON.stringify(getMonthData(yearMonth)); }
-  catch(e) { return JSON.stringify({error:e.message}); }
+  try {
+    var cache = CacheService.getScriptCache();
+    var cacheKey = 'monthData_' + yearMonth.replace('-', '_');
+    var cached = cache.get(cacheKey);
+    if (cached) {
+      console.log('[Cache HIT] ' + cacheKey);
+      return cached;
+    }
+    console.log('[Cache MISS] ' + cacheKey + ' — computing...');
+    var result = JSON.stringify(getMonthData(yearMonth));
+    try { cache.put(cacheKey, result, 21600); } catch(ce) { console.log('[Cache PUT failed — data may exceed 100KB] ' + ce.message); }
+    return result;
+  } catch(e) { return JSON.stringify({error: e.message}); }
 }
 function getCalendarGridDataForClient(yearMonth) {
   try { return JSON.stringify(getCalendarGridData(yearMonth)); }
@@ -548,6 +564,15 @@ function testFetch() {
     console.log(name + ' (ID:'+id+'): 共 ' + events.length + ' 事件，有效 ' + valid.length);
     valid.slice(0, 3).forEach(function(ev) { console.log('  ' + ev.title + ' @ ' + formatTime(ev.start)); });
   });
+}
+
+// 清除月分析快取（強制重新抓取）
+function refreshMonthCache(yearMonth) {
+  var cache = CacheService.getScriptCache();
+  var ym = yearMonth || (function(){ var d=new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1); })();
+  var cacheKey = 'monthData_' + ym.replace('-', '_');
+  cache.remove(cacheKey);
+  console.log('[Cache cleared] ' + cacheKey + ' — 下次載入將重新抓取');
 }
 
 // 一鍵寫入 Calendar ID 到 Script Properties

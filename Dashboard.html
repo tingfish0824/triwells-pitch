@@ -279,7 +279,7 @@ function destroyChart(key){if(state.charts[key]){state.charts[key].destroy();del
 function getEl(id){return document.getElementById(id);}
 function dayName(ds){var p=ds.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);return DAY_LABELS[d.getDay()];}
 function fmtDateLabel(ds){var p=ds.split('-');return p[1]+'月'+p[2]+'日 ('+dayName(ds)+')';}
-function addDays(ds,n){var d=new Date(ds.replace(/-/g,'/')+'T00:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function addDays(ds,n){var p=ds.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);d.setDate(d.getDate()+n);return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
 
 // ==================== DATE NAV ====================
 function updateDateNavLabel(){
@@ -328,11 +328,21 @@ function loadWeekly(){
   }
 }
 function loadMonthly(){
-  getEl('panel-monthly').innerHTML='<div class="loading">載入月分析中…</div>';
+  getEl('panel-monthly').innerHTML='<div class="loading">正在抓取各診所資料（可能需要 20-30 秒）...</div>';
   if(typeof google!=='undefined'&&google.script){
+    var done=false;
+    var timer=setTimeout(function(){
+      if(!done){done=true;getEl('panel-monthly').innerHTML='<div class="loading">載入逾時，請重試<br><br><button onclick="loadMonthly()" style="padding:8px 20px;border:none;border-radius:6px;background:var(--brand);color:#fff;font-size:13px;cursor:pointer">重試</button></div>';}
+    },30000);
     google.script.run
-      .withSuccessHandler(function(json){state.monthData=JSON.parse(json);renderMonthly(state.monthData);})
-      .withFailureHandler(function(){getEl('panel-monthly').innerHTML='<div class="loading">載入失敗</div>';})
+      .withSuccessHandler(function(json){
+        if(done)return;done=true;clearTimeout(timer);
+        state.monthData=JSON.parse(json);renderMonthly(state.monthData);
+      })
+      .withFailureHandler(function(e){
+        if(done)return;done=true;clearTimeout(timer);
+        getEl('panel-monthly').innerHTML='<div class="loading">載入失敗：'+esc((e&&e.message)||'未知錯誤')+'<br><br><button onclick="loadMonthly()" style="padding:8px 20px;border:none;border-radius:6px;background:var(--brand);color:#fff;font-size:13px;cursor:pointer">重試</button></div>';
+      })
       .getMonthDataForClient(state.monthYM);
   }
 }
@@ -730,7 +740,7 @@ function renderWeekNP(data){
 }
 
 function changeWeek(dir){
-  var d=new Date(state.weekDate.replace(/-/g,'/'));d.setDate(d.getDate()+dir*7);
+  var p=state.weekDate.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);d.setDate(d.getDate()+dir*7);
   state.weekDate=d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
   state.weekData=null;loadWeekly();
 }
